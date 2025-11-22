@@ -1,9 +1,8 @@
-package com.example.parcial_1_am_acn4av_gonzales_oturakdjian;
+package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 

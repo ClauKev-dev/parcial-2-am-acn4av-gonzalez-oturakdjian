@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.parcial_1_am_acn4av_gonzales_oturakdjian'
+    namespace 'com.example.parcial_2_am_acn4av_gonzales_oturakdjian'
     compileSdk 36
 
     defaultConfig {

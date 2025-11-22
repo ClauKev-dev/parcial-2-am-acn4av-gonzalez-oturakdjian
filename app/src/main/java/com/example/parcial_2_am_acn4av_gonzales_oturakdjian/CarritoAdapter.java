@@ -1,4 +1,4 @@
-package com.example.parcial_1_am_acn4av_gonzales_oturakdjian;
+package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
 
 import android.view.LayoutInflater;
 import android.view.View;

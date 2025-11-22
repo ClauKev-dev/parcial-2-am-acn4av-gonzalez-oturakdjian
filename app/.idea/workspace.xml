@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="622c5935-d16b-427f-bcc2-ef1361098cb4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/androidTest/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/ExampleInstrumentedTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/androidTest/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/ExampleInstrumentedTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/BaseActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/BaseActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/CarouselAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/CarouselAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/CarritoActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/CarritoActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/CarritoAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/CarritoAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/CarritoManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/CarritoManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/Product.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/ProductAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/ProductAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/parcial_1_am_acn4av_gonzales_oturakdjian/ExampleUnitTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/parcial_2_am_acn4av_gonzales_oturakdjian/ExampleUnitTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="35prQhjW2Akmgz2J9t7TcxLfvaQ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "android.gradle.sync.needed": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/Kevin/Desktop/Da Vinci/cuatrimestre 4/apps moviles/GitHub/parcial-2-am-acn4av-Gonzalez-Oturakdjian/app"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="622c5935-d16b-427f-bcc2-ef1361098cb4" name="Changes" comment="" />
+      <created>1763817839476</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763817839476</updated>
+    </task>
+    <servers />
+  </component>
+</project>
