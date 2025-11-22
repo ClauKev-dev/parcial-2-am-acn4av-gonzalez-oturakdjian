@@ -128,6 +128,19 @@ public class BaseActivity extends AppCompatActivity {
         if (tabMenu != null) tabMenu.setOnClickListener(listener);
     }
 
+    protected void setupTopNavigation() {
+        android.widget.ImageView ivProfile = findViewById(R.id.iv_profile);
+        if (ivProfile != null) {
+            ivProfile.setOnClickListener(v -> {
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
+            });
+            // Make it clickable
+            ivProfile.setClickable(true);
+            ivProfile.setFocusable(true);
+        }
+    }
+
 
 }
 

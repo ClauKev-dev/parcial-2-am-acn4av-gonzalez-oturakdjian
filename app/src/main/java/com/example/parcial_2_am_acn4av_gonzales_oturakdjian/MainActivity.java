@@ -46,6 +46,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         setupBottomNavigation();
+        setupTopNavigation();
         tvCartCount = findViewById(R.id.tv_cart_count);
         setupCarousel();
 

@@ -4,4 +4,44 @@
     <string name="perfil">Perfil</string>
     <string name="buscar">Buscar...</string>
     <string name="mi_direcci_n_calle_123">Mi dirección: Calle 123</string>
+    
+    <!-- Login Strings -->
+    <string name="login_title">Bienvenido</string>
+    <string name="login_subtitle">Inicia sesión en tu cuenta</string>
+    <string name="email_hint">Correo electrónico</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="register_link">¿No tienes cuenta? Regístrate</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    
+    <!-- Register Strings -->
+    <string name="register_title">Crear Cuenta</string>
+    <string name="register_subtitle">Únete a MediPocket</string>
+    <string name="name_hint">Nombre completo</string>
+    <string name="phone_hint">Teléfono</string>
+    <string name="confirm_password_hint">Confirmar contraseña</string>
+    <string name="register_button">Registrarse</string>
+    <string name="login_link">¿Ya tienes cuenta? Inicia sesión</string>
+    
+    <!-- Validation Messages -->
+    <string name="error_email_required">El correo electrónico es requerido</string>
+    <string name="error_email_invalid">Correo electrónico inválido</string>
+    <string name="error_password_required">La contraseña es requerida</string>
+    <string name="error_password_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_name_required">El nombre es requerido</string>
+    <string name="error_phone_required">El teléfono es requerido</string>
+    <string name="error_phone_invalid">Teléfono inválido</string>
+    <string name="error_passwords_not_match">Las contraseñas no coinciden</string>
+    <string name="success_register">¡Registro exitoso! Redirigiendo al login...</string>
+    <string name="success_login">¡Bienvenido a MediPocket!</string>
+    
+    <!-- Profile Strings -->
+    <string name="profile_title">Mi Perfil</string>
+    <string name="profile_email">Correo electrónico</string>
+    <string name="profile_name">Nombre</string>
+    <string name="profile_phone">Teléfono</string>
+    <string name="logout_button">Cerrar Sesión</string>
+    <string name="logout_confirmation">¿Estás seguro que deseas cerrar sesión?</string>
+    <string name="logout_success">Sesión cerrada exitosamente</string>
+    <string name="loading_user_data">Cargando datos del usuario...</string>
 </resources>
