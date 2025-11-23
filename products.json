@@ -3,37 +3,37 @@
     "id": "1",
     "name": "Curitas",
     "price": 3500.0,
-    "imageUrl": "https://via.placeholder.com/300?text=Curitas"
+    "imageUrl": "https://images-us.eucerin.com/~/media/hansaplast/local/region-latam/2024/pdps%20packshots/transpiel%20x20.jpg"
   },
   {
     "id": "2",
     "name": "Jarabe para la tos",
     "price": 4200.0,
-    "imageUrl": "https://via.placeholder.com/300?text=Jarabe"
+    "imageUrl": "https://cdn.batitienda.com/baticloud/images/product_picture_0f1e2bc768fd41199b928b08b76a2a74_637873163055766508_0_m.jpg"
   },
   {
     "id": "3",
     "name": "Tafirol para espasmos",
     "price": 8000.0,
-    "imageUrl": "https://via.placeholder.com/300?text=Tafirol"
+    "imageUrl": "https://tafirol.com/hubfs/Frame%20100000594899.png"
   },
   {
     "id": "4",
     "name": "Ibuprofeno 400",
     "price": 6000.0,
-    "imageUrl": "https://via.placeholder.com/300?text=Ibuprofeno"
+    "imageUrl": "https://farmacityar.vtexassets.com/arquivos/ids/260677/240916_ibuprofeno-400-x-20-comp_imagen-1.jpg?v=638629753908430000"
   },
   {
     "id": "5",
     "name": "Paracetamol 500mg",
     "price": 2500.0,
-    "imageUrl": "https://via.placeholder.com/300?text=Paracetamol"
+    "imageUrl": "https://www.isalaboratorios.com.ar/img/estuches/venta-libre/paracetamol-isa-500.png"
   },
   {
     "id": "6",
     "name": "Aspirina",
     "price": 1800.0,
-    "imageUrl": "https://via.placeholder.com/300?text=Aspirina"
+    "imageUrl": "https://s2.elespanol.com/2018/06/08/ciencia/salud/farmacologia-farmacologia_clinica-salud_313481328_81018057_1706x1280.jpg"
   }
 ]
 
