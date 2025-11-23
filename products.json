@@ -1,0 +1,39 @@
+[
+  {
+    "id": "1",
+    "name": "Curitas",
+    "price": 3500.0,
+    "imageUrl": "https://via.placeholder.com/300?text=Curitas"
+  },
+  {
+    "id": "2",
+    "name": "Jarabe para la tos",
+    "price": 4200.0,
+    "imageUrl": "https://via.placeholder.com/300?text=Jarabe"
+  },
+  {
+    "id": "3",
+    "name": "Tafirol para espasmos",
+    "price": 8000.0,
+    "imageUrl": "https://via.placeholder.com/300?text=Tafirol"
+  },
+  {
+    "id": "4",
+    "name": "Ibuprofeno 400",
+    "price": 6000.0,
+    "imageUrl": "https://via.placeholder.com/300?text=Ibuprofeno"
+  },
+  {
+    "id": "5",
+    "name": "Paracetamol 500mg",
+    "price": 2500.0,
+    "imageUrl": "https://via.placeholder.com/300?text=Paracetamol"
+  },
+  {
+    "id": "6",
+    "name": "Aspirina",
+    "price": 1800.0,
+    "imageUrl": "https://via.placeholder.com/300?text=Aspirina"
+  }
+]
+
