@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
-    private TextView tvEmailError, tvPasswordError, tvSuccessMessage, tvRegisterLink, tvForgotPassword;
-    private Button btnLogin;
+    private TextView tvEmailError, tvPasswordError, tvSuccessMessage, tvForgotPassword;
+    private Button btnLogin, btnRegisterBottom;
     private FirebaseAuth mAuth;
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@(.+)$";
 
@@ -71,24 +71,26 @@ public class LoginActivity extends AppCompatActivity {
         tvEmailError = findViewById(R.id.tv_email_error);
         tvPasswordError = findViewById(R.id.tv_password_error);
         tvSuccessMessage = findViewById(R.id.tv_success_message);
-        tvRegisterLink = findViewById(R.id.tv_register_link);
         tvForgotPassword = findViewById(R.id.tv_forgot_password);
         btnLogin = findViewById(R.id.btn_login);
+        btnRegisterBottom = findViewById(R.id.btn_register_bottom);
     }
 
     private void setupListeners() {
-        // Login button click
+        // Login button click (inside card)
         btnLogin.setOnClickListener(v -> {
             if (validateForm()) {
                 performLogin();
             }
         });
 
-        // Register link click
-        tvRegisterLink.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
+        // Register button click (bottom)
+        if (btnRegisterBottom != null) {
+            btnRegisterBottom.setOnClickListener(v -> {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            });
+        }
 
         // Forgot password click
         tvForgotPassword.setOnClickListener(v -> {

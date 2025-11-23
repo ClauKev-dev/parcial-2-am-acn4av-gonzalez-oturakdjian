@@ -14,4 +14,6 @@
     <color name="text_hint">#999999</color>
     <color name="error_red">#FF4444</color>
     <color name="link_color">#70CC7C</color>
+    <color name="dark_gray">#4A4A4A</color>
+    <color name="input_gray">#F5F5F5</color>
 </resources>

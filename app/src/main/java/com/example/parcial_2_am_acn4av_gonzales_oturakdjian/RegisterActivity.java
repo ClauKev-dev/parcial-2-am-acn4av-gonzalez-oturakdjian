@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etName, etDni, etAddress, etEmail, etPhone, etPassword, etConfirmPassword;
-    private TextView tvNameError, tvDniError, tvAddressError, tvEmailError, tvPhoneError, tvPasswordError, tvConfirmPasswordError, tvSuccessMessage, tvLoginLink;
-    private Button btnRegister;
+    private TextView tvNameError, tvDniError, tvAddressError, tvEmailError, tvPhoneError, tvPasswordError, tvConfirmPasswordError, tvSuccessMessage;
+    private Button btnRegister, btnLoginBottom;
     private ScrollView scrollView;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -63,8 +63,8 @@ public class RegisterActivity extends AppCompatActivity {
         tvPasswordError = findViewById(R.id.tv_password_error);
         tvConfirmPasswordError = findViewById(R.id.tv_confirm_password_error);
         tvSuccessMessage = findViewById(R.id.tv_success_message);
-        tvLoginLink = findViewById(R.id.tv_login_link);
         btnRegister = findViewById(R.id.btn_register);
+        btnLoginBottom = findViewById(R.id.btn_login_bottom);
         scrollView = findViewById(R.id.scroll_view);
     }
 
@@ -76,12 +76,14 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        // Login link click
-        tvLoginLink.setOnClickListener(v -> {
-            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        // Login button click (bottom)
+        if (btnLoginBottom != null) {
+            btnLoginBottom.setOnClickListener(v -> {
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            });
+        }
 
         // Focus change listeners for dynamic background change
         setupFocusListeners();
