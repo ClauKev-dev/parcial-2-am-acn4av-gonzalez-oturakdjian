@@ -14,11 +14,10 @@
         android:layout_height="@dimen/login_logo_size"
         android:layout_marginTop="@dimen/login_margin_top"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_store"
+        android:src="@drawable/ic_launcher_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/primary_green"
         tools:ignore="ImageContrastCheck" />
 
     <!-- Title Section -->
@@ -36,6 +35,7 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:text="@string/login_title"
             android:textColor="@color/black"
             android:textSize="@dimen/login_title_size"
@@ -140,7 +140,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/login_button_height"
             android:layout_marginTop="@dimen/login_spacing"
-            android:background="@drawable/button_selector"
+            android:backgroundTint="@color/primary_green_dark"
             android:text="@string/login_button"
             android:textColor="@color/white"
             android:textSize="16sp"
