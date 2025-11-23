@@ -18,6 +18,8 @@
     <string name="register_title">Crear Cuenta</string>
     <string name="register_subtitle">Únete a MediPocket</string>
     <string name="name_hint">Nombre completo</string>
+    <string name="dni_hint">DNI</string>
+    <string name="address_hint">Dirección</string>
     <string name="phone_hint">Teléfono</string>
     <string name="confirm_password_hint">Confirmar contraseña</string>
     <string name="register_button">Registrarse</string>
@@ -31,6 +33,9 @@
     <string name="error_name_required">El nombre es requerido</string>
     <string name="error_phone_required">El teléfono es requerido</string>
     <string name="error_phone_invalid">Teléfono inválido</string>
+    <string name="error_dni_required">El DNI es requerido</string>
+    <string name="error_dni_invalid">DNI inválido</string>
+    <string name="error_address_required">La dirección es requerida</string>
     <string name="error_passwords_not_match">Las contraseñas no coinciden</string>
     <string name="success_register">¡Registro exitoso! Redirigiendo al login...</string>
     <string name="success_login">¡Bienvenido a MediPocket!</string>
@@ -39,7 +44,13 @@
     <string name="profile_title">Mi Perfil</string>
     <string name="profile_email">Correo electrónico</string>
     <string name="profile_name">Nombre</string>
+    <string name="profile_dni">DNI</string>
+    <string name="profile_address">Dirección</string>
     <string name="profile_phone">Teléfono</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="save_profile">Guardar Cambios</string>
+    <string name="cancel_edit">Cancelar</string>
+    <string name="profile_updated">Perfil actualizado exitosamente</string>
     <string name="logout_button">Cerrar Sesión</string>
     <string name="logout_confirmation">¿Estás seguro que deseas cerrar sesión?</string>
     <string name="logout_success">Sesión cerrada exitosamente</string>
