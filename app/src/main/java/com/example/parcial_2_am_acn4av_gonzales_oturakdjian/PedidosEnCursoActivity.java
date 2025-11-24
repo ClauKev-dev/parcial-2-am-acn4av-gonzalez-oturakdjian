@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import android.os.Handler;
 
 public class PedidosEnCursoActivity extends BaseActivity {
 
@@ -29,6 +30,10 @@ public class PedidosEnCursoActivity extends BaseActivity {
     private FirebaseFirestore db;
     private List<Order> pedidosEnCursoList;
     private List<Order> pedidosHistorialList;
+    private Handler statusUpdateHandler;
+    private Runnable statusUpdateRunnable;
+    private static final long UPDATE_INTERVAL_MS = 10000; // Check every 10 seconds
+    private static final long STATUS_CHANGE_DELAY_MS = 60000; // 60 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +58,47 @@ public class PedidosEnCursoActivity extends BaseActivity {
         recyclerPedidosEnCurso.setAdapter(adapterEnCurso);
         recyclerPedidosHistorial.setAdapter(adapterHistorial);
 
+        // Initialize handler for status updates
+        statusUpdateHandler = new Handler();
+        statusUpdateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                verificarYActualizarEstados();
+                statusUpdateHandler.postDelayed(this, UPDATE_INTERVAL_MS);
+            }
+        };
+
         cargarPedidos();
+        // Start checking for status updates
+        statusUpdateHandler.postDelayed(statusUpdateRunnable, UPDATE_INTERVAL_MS);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         cargarPedidos();
+        // Restart status update checking
+        if (statusUpdateHandler != null && statusUpdateRunnable != null) {
+            statusUpdateHandler.postDelayed(statusUpdateRunnable, UPDATE_INTERVAL_MS);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Stop status update checking when activity is paused
+        if (statusUpdateHandler != null && statusUpdateRunnable != null) {
+            statusUpdateHandler.removeCallbacks(statusUpdateRunnable);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up handler
+        if (statusUpdateHandler != null && statusUpdateRunnable != null) {
+            statusUpdateHandler.removeCallbacks(statusUpdateRunnable);
+        }
     }
 
     private void cargarPedidos() {
@@ -79,6 +118,9 @@ public class PedidosEnCursoActivity extends BaseActivity {
                     pedidosEnCursoList.clear();
                     pedidosHistorialList.clear();
                     
+                    long currentTime = System.currentTimeMillis();
+                    List<String> ordersToUpdate = new ArrayList<>();
+                    
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Order order = document.toObject(Order.class);
                         order.setId(document.getId());
@@ -86,11 +128,33 @@ public class PedidosEnCursoActivity extends BaseActivity {
                         // Separar pedidos en curso del historial
                         String status = order.getStatus();
                         if (status != null && status.equals("en_curso")) {
-                            pedidosEnCursoList.add(order);
+                            // Check if order should be completed (60 seconds have passed)
+                            com.google.firebase.Timestamp createdAt = order.getCreatedAt();
+                            if (createdAt != null) {
+                                long orderCreatedTime = createdAt.toDate().getTime();
+                                long timeElapsed = currentTime - orderCreatedTime;
+                                
+                                if (timeElapsed >= STATUS_CHANGE_DELAY_MS) {
+                                    // Mark for update in Firestore
+                                    ordersToUpdate.add(document.getId());
+                                    // Update status locally and add to historial
+                                    order.setStatus("completado");
+                                    pedidosHistorialList.add(order);
+                                } else {
+                                    pedidosEnCursoList.add(order);
+                                }
+                            } else {
+                                pedidosEnCursoList.add(order);
+                            }
                         } else {
                             // Historial: completados y cancelados
                             pedidosHistorialList.add(order);
                         }
+                    }
+                    
+                    // Update orders that should be completed in Firestore
+                    for (String orderId : ordersToUpdate) {
+                        actualizarEstadoPedido(user.getUid(), orderId);
                     }
 
                     // Actualizar sección de pedidos en curso
@@ -119,6 +183,51 @@ public class PedidosEnCursoActivity extends BaseActivity {
                     recyclerPedidosEnCurso.setVisibility(View.GONE);
                     tvEmptyHistorial.setVisibility(View.VISIBLE);
                     recyclerPedidosHistorial.setVisibility(View.GONE);
+                });
+    }
+
+    private void verificarYActualizarEstados() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            return;
+        }
+
+        long currentTime = System.currentTimeMillis();
+
+        db.collection("users").document(user.getUid()).collection("orders")
+                .whereEqualTo("status", "en_curso")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Order order = document.toObject(Order.class);
+                        com.google.firebase.Timestamp createdAt = order.getCreatedAt();
+
+                        if (createdAt != null) {
+                            long orderCreatedTime = createdAt.toDate().getTime();
+                            long timeElapsed = currentTime - orderCreatedTime;
+
+                            // If 60 seconds have passed, update status to "completado"
+                            if (timeElapsed >= STATUS_CHANGE_DELAY_MS) {
+                                actualizarEstadoPedido(user.getUid(), document.getId());
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("PedidosEnCursoActivity", "Error al verificar estados: " + e.getMessage(), e);
+                });
+    }
+
+    private void actualizarEstadoPedido(String userId, String orderId) {
+        db.collection("users").document(userId).collection("orders").document(orderId)
+                .update("status", "completado", "updatedAt", com.google.firebase.Timestamp.now())
+                .addOnSuccessListener(aVoid -> {
+                    android.util.Log.d("PedidosEnCursoActivity", "Estado actualizado a completado para pedido: " + orderId);
+                    // Reload orders to reflect the change
+                    cargarPedidos();
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("PedidosEnCursoActivity", "Error al actualizar estado: " + e.getMessage(), e);
                 });
     }
 
