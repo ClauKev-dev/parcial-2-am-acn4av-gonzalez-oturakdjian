@@ -296,17 +296,24 @@ public class CarritoActivity extends BaseActivity {
                 .add(orderData)
                 .addOnSuccessListener(documentReference -> {
                     order.setId(documentReference.getId());
-                    android.util.Log.d("CarritoActivity", "Pedido guardado: " + documentReference.getId());
+                    android.util.Log.d("CarritoActivity", "Pedido guardado exitosamente: " + documentReference.getId());
                     
-                    // Limpiar carrito después del pago exitoso
+                    // Limpiar carrito después del pago exitoso (tanto local como en Firestore)
                     CarritoManager.limpiarCarrito();
+                    android.util.Log.d("CarritoActivity", "Carrito limpiado después del pago");
                     
-                    Toast.makeText(this, "¡Pago realizado exitosamente!", Toast.LENGTH_LONG).show();
+                    // Actualizar UI inmediatamente
+                    actualizarTotal();
                     
-                    // Actualizar UI
+                    // Recargar carrito desde Firestore para asegurar que esté vacío
                     cargarCarrito();
+                    
+                    // Actualizar botón
                     btnPagar.setEnabled(true);
                     btnPagar.setText("Pagar");
+                    
+                    // Mostrar mensaje de éxito
+                    Toast.makeText(this, "¡Pago realizado exitosamente! El carrito ha sido vaciado.", Toast.LENGTH_LONG).show();
                     
                     // Opcional: navegar a pedidos en curso
                     // Intent intent = new Intent(this, PedidosEnCursoActivity.class);
