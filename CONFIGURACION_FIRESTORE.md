@@ -13,6 +13,16 @@ users/
         price: number
         quantity: number
         imageUrl: string
+    orders/
+      {orderId}/
+        userId: string
+        products: array
+        total: number
+        status: string (en_curso, completado, cancelado)
+        cardNumber: string
+        cardHolder: string
+        createdAt: timestamp
+        updatedAt: timestamp
 ```
 
 ## Reglas de Seguridad de Firestore
@@ -38,6 +48,12 @@ service cloud.firestore {
       // Reglas para el carrito del usuario
       match /cart/{cartItemId} {
         // Permitir lectura y escritura del carrito solo si el usuario está autenticado y es su propio carrito
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Reglas para los pedidos del usuario
+      match /orders/{orderId} {
+        // Permitir lectura y escritura de pedidos solo si el usuario está autenticado y es su propio pedido
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }

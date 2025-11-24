@@ -175,10 +175,9 @@ public class BaseActivity extends AppCompatActivity {
                 int itemId = item.getItemId();
                 
                 if (itemId == R.id.nav_pedidos_curso) {
-                    // Navigate to PedidosEnCursoActivity (placeholder for now)
-                    Toast.makeText(this, "Pedidos en curso - Próximamente", Toast.LENGTH_SHORT).show();
-                    // Intent intent = new Intent(this, PedidosEnCursoActivity.class);
-                    // startActivity(intent);
+                    // Navigate to PedidosEnCursoActivity
+                    Intent intent = new Intent(this, PedidosEnCursoActivity.class);
+                    startActivity(intent);
                 } else if (itemId == R.id.nav_historial_pedidos) {
                     // Navigate to HistorialPedidosActivity (placeholder for now)
                     Toast.makeText(this, "Historial de pedidos - Próximamente", Toast.LENGTH_SHORT).show();

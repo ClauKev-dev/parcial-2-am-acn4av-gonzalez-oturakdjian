@@ -20,18 +20,34 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@id/tvTituloCarrito"
-        android:layout_above="@id/tvTotal" /> <!-- Asegura que el RecyclerView esté por encima del total -->
+        android:layout_above="@id/llTotalPagar" />
 
 
-    <TextView
-        android:id="@+id/tvTotal"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llTotalPagar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="74dp"
-        android:text="Total: $0.00"
-        android:textSize="18sp" />
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="12dp"
+            android:text="Total: $0.00"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnPagar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pagar"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 </RelativeLayout>
