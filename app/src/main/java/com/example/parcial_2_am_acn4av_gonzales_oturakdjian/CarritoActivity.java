@@ -1,6 +1,7 @@
 package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -298,26 +299,41 @@ public class CarritoActivity extends BaseActivity {
                     order.setId(documentReference.getId());
                     android.util.Log.d("CarritoActivity", "Pedido guardado exitosamente: " + documentReference.getId());
                     
-                    // Limpiar carrito después del pago exitoso (tanto local como en Firestore)
+                    // Actualizar UI INMEDIATAMENTE con lista vacía (sin esperar Firestore)
+                    // Esto hace que el carrito se vea vacío instantáneamente
+                    runOnUiThread(() -> {
+                        // Crear nuevo adapter con lista vacía
+                        adapter = new CarritoAdapter(CarritoActivity.this, new ArrayList<>());
+                        recyclerCarrito.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        
+                        // Actualizar total a $0.00 inmediatamente
+                        tvTotal.setText(String.format(Locale.getDefault(), "Total: $%.2f", 0.0));
+                        
+                        // Actualizar botón
+                        btnPagar.setEnabled(true);
+                        btnPagar.setText("Pagar");
+                    });
+                    
+                    // Limpiar carrito en Firestore (asíncrono)
                     CarritoManager.limpiarCarrito();
                     android.util.Log.d("CarritoActivity", "Carrito limpiado después del pago");
                     
-                    // Actualizar UI inmediatamente
-                    actualizarTotal();
-                    
-                    // Recargar carrito desde Firestore para asegurar que esté vacío
+                    // Recargar carrito desde Firestore para sincronizar (en segundo plano)
+                    // Esto confirmará que está vacío y mantendrá la sincronización
                     cargarCarrito();
-                    
-                    // Actualizar botón
-                    btnPagar.setEnabled(true);
-                    btnPagar.setText("Pagar");
                     
                     // Mostrar mensaje de éxito
                     Toast.makeText(this, "¡Pago realizado exitosamente! El carrito ha sido vaciado.", Toast.LENGTH_LONG).show();
                     
-                    // Opcional: navegar a pedidos en curso
-                    // Intent intent = new Intent(this, PedidosEnCursoActivity.class);
-                    // startActivity(intent);
+                    // Redirigir automáticamente al home después de un breve delay
+                    android.os.Handler handler = new android.os.Handler();
+                    handler.postDelayed(() -> {
+                        Intent intent = new Intent(CarritoActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish(); // Cerrar CarritoActivity para que no quede en el stack
+                    }, 1500); // Esperar 1.5 segundos para que el usuario vea el mensaje de éxito
                 })
                 .addOnFailureListener(e -> {
                     String errorMsg = e.getMessage();
