@@ -335,6 +335,8 @@ public class RegisterActivity extends AppCompatActivity {
                         if (user != null) {
                             // Save additional user data to Firestore
                             saveUserDataToFirestore(user.getUid(), name, dni, address, email, phone);
+                            // Crear carrito vacío para el nuevo usuario
+                            CarritoManager.crearCarritoVacio(user.getUid());
                         } else {
                             // User created but user object is null - redirect anyway
                             android.util.Log.w("RegisterActivity", "User created but user object is null");

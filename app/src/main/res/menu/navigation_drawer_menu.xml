@@ -12,14 +12,14 @@
         android:title="Historial de pedidos" />
     
     <item
-        android:id="@+id/nav_configuracion"
-        android:icon="@drawable/ic_settings"
-        android:title="Configuración" />
-    
-    <item
         android:id="@+id/nav_carga_documentos"
         android:icon="@drawable/ic_document_upload"
         android:title="Carga de documentos" />
+
+    <item
+        android:id="@+id/nav_configuracion"
+        android:icon="@drawable/ic_settings"
+        android:title="Configuración" />
     
 </menu>
 

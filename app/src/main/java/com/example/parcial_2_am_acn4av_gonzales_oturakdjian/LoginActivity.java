@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity {
@@ -57,11 +58,26 @@ public class LoginActivity extends AppCompatActivity {
     private void checkCurrentUser() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            // User is already logged in, redirect to MainActivity
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            // Cargar carrito del usuario antes de redirigir
+            CarritoManager.cargarCarrito(new CarritoManager.CarritoLoadListener() {
+                @Override
+                public void onCarritoLoaded(List<Product> carrito) {
+                    // User is already logged in, redirect to MainActivity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onError(String error) {
+                    // Aún así redirigir aunque haya error al cargar el carrito
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+            });
         }
     }
 
@@ -222,11 +238,26 @@ public class LoginActivity extends AppCompatActivity {
                             tvSuccessMessage.setText(getString(R.string.success_login));
                             tvSuccessMessage.setVisibility(View.VISIBLE);
 
-                            // Navigate to MainActivity after successful login
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
+                            // Cargar carrito del usuario antes de navegar
+                            CarritoManager.cargarCarrito(new CarritoManager.CarritoLoadListener() {
+                                @Override
+                                public void onCarritoLoaded(List<Product> carrito) {
+                                    // Navigate to MainActivity after successful login
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
+                                @Override
+                                public void onError(String error) {
+                                    // Aún así navegar aunque haya error al cargar el carrito
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
                         }
                     } else {
                         // Login failed

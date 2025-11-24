@@ -78,8 +78,28 @@ public class MainActivity extends BaseActivity {
 
         // Initialize adapter
         productAdapter = new ProductAdapter(this, productList, product -> {
+            // Verificar que el producto no sea nulo
+            if (product == null) {
+                Toast.makeText(MainActivity.this, "Error: Producto no válido", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Verificar autenticación
+            com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                Toast.makeText(MainActivity.this, "Debes iniciar sesión para agregar productos", Toast.LENGTH_LONG).show();
+                return;
+            }
+            
+            // Agregar producto al carrito
+            android.util.Log.d("MainActivity", "Intentando agregar producto: " + product.getName());
             CarritoManager.agregarProducto(product);
+            
+            // Actualizar contador inmediatamente
             actualizarCartCount();
+            
+            // Mostrar mensaje de confirmación
+            Toast.makeText(MainActivity.this, product.getName() + " agregado al carrito", Toast.LENGTH_SHORT).show();
         });
         recyclerProducts.setAdapter(productAdapter);
 
@@ -87,8 +107,25 @@ public class MainActivity extends BaseActivity {
         executorService = Executors.newSingleThreadExecutor();
         mainHandler = new Handler(getMainLooper());
 
+        // Cargar carrito del usuario al iniciar (esto se hace primero)
+        cargarCarritoUsuario();
+
         // Load products from JSON URL
         loadProductsFromJson();
+    }
+
+    private void cargarCarritoUsuario() {
+        CarritoManager.cargarCarrito(new CarritoManager.CarritoLoadListener() {
+            @Override
+            public void onCarritoLoaded(List<Product> carrito) {
+                actualizarCartCount();
+            }
+
+            @Override
+            public void onError(String error) {
+                android.util.Log.e("MainActivity", "Error al cargar carrito: " + error);
+            }
+        });
     }
 
     private void loadProductsFromJson() {
@@ -314,10 +351,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void actualizarCartCount() {
-        int total = 0;
-        for (Product p : CarritoManager.getCarrito()) {
-            total += p.getQuantity();
-        }
+        int total = CarritoManager.getTotalItems();
 
         if (total > 0) {
             tvCartCount.setText(String.valueOf(total));

@@ -167,6 +167,9 @@ public class ProfileActivity extends AppCompatActivity {
         btnLogout.setEnabled(false);
         btnLogout.setText("Cerrando sesión...");
 
+        // Limpiar carrito local antes de cerrar sesión
+        CarritoManager.limpiarCarrito();
+
         // Sign out from Firebase
         mAuth.signOut();
 

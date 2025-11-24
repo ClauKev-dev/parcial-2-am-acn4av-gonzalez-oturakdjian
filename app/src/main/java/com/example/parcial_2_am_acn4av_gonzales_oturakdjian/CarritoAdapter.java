@@ -53,6 +53,8 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
 
         holder.btnIncrease.setOnClickListener(v -> {
             producto.increaseQuantity();
+            // Actualizar en Firestore
+            CarritoManager.actualizarCantidadProducto(producto, producto.getQuantity());
             notifyItemChanged(position);
             activity.actualizarTotal();
         });
@@ -60,10 +62,16 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
         holder.btnDecrease.setOnClickListener(v -> {
             if (producto.getQuantity() > 1) {
                 producto.setQuantity(producto.getQuantity() - 1);
+                // Actualizar en Firestore
+                CarritoManager.actualizarCantidadProducto(producto, producto.getQuantity());
+                notifyItemChanged(position);
             } else {
-                carrito.remove(position);
+                // Eliminar producto del carrito y de Firestore
+                CarritoManager.eliminarProducto(producto);
+                // Actualizar la lista del adapter con la lista actualizada de CarritoManager
+                carrito = CarritoManager.getCarrito();
+                notifyDataSetChanged();
             }
-            notifyDataSetChanged();
             activity.actualizarTotal();
         });
     }

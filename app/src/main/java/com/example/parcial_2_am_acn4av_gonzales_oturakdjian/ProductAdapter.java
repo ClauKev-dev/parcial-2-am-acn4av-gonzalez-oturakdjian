@@ -55,7 +55,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
         
         holder.tvName.setText(product.getName());
-        holder.tvPrice.setText(product.getPriceFormatted());
+        // Mostrar solo el precio individual, no el precio * cantidad
+        String precioFormateado = String.format(java.util.Locale.getDefault(), "$%.2f", product.getPrice());
+        holder.tvPrice.setText(precioFormateado);
 
         holder.btnAddToCart.setOnClickListener(v -> {
             Toast.makeText(context, product.getName() + " agregado al carrito", Toast.LENGTH_SHORT).show();
