@@ -61,7 +61,6 @@ public class PedidosEnCursoActivity extends BaseActivity {
         }
 
         db.collection("users").document(user.getUid()).collection("orders")
-                .whereEqualTo("status", "en_curso")
                 .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -73,6 +72,7 @@ public class PedidosEnCursoActivity extends BaseActivity {
                     }
 
                     if (pedidosList.isEmpty()) {
+                        tvEmpty.setText("No hay pedidos");
                         tvEmpty.setVisibility(View.VISIBLE);
                         recyclerPedidos.setVisibility(View.GONE);
                     } else {

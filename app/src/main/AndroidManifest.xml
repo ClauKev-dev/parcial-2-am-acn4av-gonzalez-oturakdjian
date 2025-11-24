@@ -27,6 +27,7 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".DescuentosActivity" />
+        <activity android:name=".PedidosEnCursoActivity" />
     </application>
 
 </manifest>

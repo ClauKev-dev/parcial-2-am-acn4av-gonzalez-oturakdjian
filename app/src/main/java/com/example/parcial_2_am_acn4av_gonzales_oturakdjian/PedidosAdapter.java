@@ -47,6 +47,35 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.PedidoVi
         String total = String.format(Locale.getDefault(), "Total: $%.2f", pedido.getTotal());
         holder.tvTotal.setText(total);
 
+        // Mostrar estado
+        if (holder.tvStatus != null) {
+            String status = pedido.getStatus();
+            if (status == null) {
+                status = "en_curso";
+            }
+            String statusText = "";
+            int statusColor = 0xFF666666; // Gray default
+            switch (status) {
+                case "en_curso":
+                    statusText = "En Curso";
+                    statusColor = 0xFF70CC7C; // Green
+                    break;
+                case "completado":
+                    statusText = "Completado";
+                    statusColor = 0xFF4CAF50; // Dark green
+                    break;
+                case "cancelado":
+                    statusText = "Cancelado";
+                    statusColor = 0xFFFF4444; // Red
+                    break;
+                default:
+                    statusText = status;
+                    break;
+            }
+            holder.tvStatus.setText(statusText);
+            holder.tvStatus.setTextColor(statusColor);
+        }
+
         // Configurar productos
         if (pedido.getProducts() != null && !pedido.getProducts().isEmpty()) {
             ProductosPedidoAdapter productosAdapter = new ProductosPedidoAdapter(pedido.getProducts());
@@ -72,7 +101,7 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.PedidoVi
     }
 
     static class PedidoViewHolder extends RecyclerView.ViewHolder {
-        TextView tvFecha, tvTotal;
+        TextView tvFecha, tvTotal, tvStatus;
         ImageView ivExpand;
         LinearLayout llProductos;
         RecyclerView recyclerProductos;
@@ -81,6 +110,7 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.PedidoVi
             super(itemView);
             tvFecha = itemView.findViewById(R.id.tvFecha);
             tvTotal = itemView.findViewById(R.id.tvTotal);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
             ivExpand = itemView.findViewById(R.id.ivExpand);
             llProductos = itemView.findViewById(R.id.llProductos);
             recyclerProductos = itemView.findViewById(R.id.recyclerProductos);
