@@ -23,7 +23,7 @@
             android:minHeight="120dp"
             android:scaleType="fitCenter"
             android:adjustViewBounds="false"
-            android:background="#E8F5E9"
+            android:background="@color/white"
             android:contentDescription="Product Image" />
 
         <!-- Product Name -->

@@ -47,12 +47,20 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="MEDIPOCKET"
+                    android:text="MEDI"
                     android:textColor="@color/black"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="5dp"
                     android:fontFamily="sans-serif" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="POCKET"
+                    android:textColor="@color/primary_green_dark2"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif"/>
 
             </LinearLayout>
 

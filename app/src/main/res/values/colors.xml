@@ -7,6 +7,8 @@
     <!-- Login/Register Colors -->
     <color name="primary_green">#70CC7C</color>
     <color name="primary_green_dark">#5AA866</color>
+    <color name="primary_green_light">#B1D8B6</color>
+    <color name="primary_green_dark2">#2C5732</color>
     <color name="input_background">#FFFFFF</color>
     <color name="input_border">#DDDDDD</color>
     <color name="input_border_focused">#70CC7C</color>

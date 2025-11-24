@@ -50,8 +50,10 @@
                     android:layout_width="0dp"
                     android:layout_height="280dp"
                     android:layout_weight="1" />
-
             </LinearLayout>
+
+
+        </LinearLayout>
 
             <!-- Second Row -->
             <LinearLayout
@@ -80,7 +82,7 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+
 
