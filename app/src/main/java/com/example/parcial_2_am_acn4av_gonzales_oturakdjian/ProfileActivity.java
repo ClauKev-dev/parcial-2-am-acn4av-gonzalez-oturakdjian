@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -49,6 +51,7 @@ public class ProfileActivity extends AppCompatActivity {
         setupListeners();
         setupBottomNavigation();
         setupTopNavigation();
+        setupDrawer();
         // Highlight the menu tab since we're in ProfileActivity
         navigateToTab(4); // TAB_MENU = 4
         loadUserData();
@@ -414,7 +417,12 @@ public class ProfileActivity extends AppCompatActivity {
 
             } else if (id == R.id.tab_menu) {
                 tabIndex = TAB_MENU;
-                // Ya estamos en ProfileActivity, no necesitamos navegar
+                // Open drawer when menu button is clicked
+                DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+                NavigationView navView = findViewById(R.id.nav_view);
+                if (drawerLayout != null && navView != null) {
+                    drawerLayout.openDrawer(navView);
+                }
             }
 
             if (tabIndex != -1) {
@@ -481,6 +489,38 @@ public class ProfileActivity extends AppCompatActivity {
             // Make it clickable
             ivProfile.setClickable(true);
             ivProfile.setFocusable(true);
+        }
+    }
+
+    protected void setupDrawer() {
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(item -> {
+                // Handle navigation view item clicks here
+                int itemId = item.getItemId();
+                
+                if (itemId == R.id.nav_pedidos_curso) {
+                    // Navigate to PedidosEnCursoActivity (placeholder for now)
+                    Toast.makeText(this, "Pedidos en curso - Próximamente", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.nav_historial_pedidos) {
+                    // Navigate to HistorialPedidosActivity (placeholder for now)
+                    Toast.makeText(this, "Historial de pedidos - Próximamente", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.nav_configuracion) {
+                    // Navigate to ConfiguracionActivity (placeholder for now)
+                    Toast.makeText(this, "Configuración - Próximamente", Toast.LENGTH_SHORT).show();
+                } else if (itemId == R.id.nav_carga_documentos) {
+                    // Navigate to CargaDocumentosActivity (placeholder for now)
+                    Toast.makeText(this, "Carga de documentos - Próximamente", Toast.LENGTH_SHORT).show();
+                }
+                
+                // Close drawer after selection
+                if (drawerLayout != null) {
+                    drawerLayout.closeDrawer(navigationView);
+                }
+                return true;
+            });
         }
     }
 }

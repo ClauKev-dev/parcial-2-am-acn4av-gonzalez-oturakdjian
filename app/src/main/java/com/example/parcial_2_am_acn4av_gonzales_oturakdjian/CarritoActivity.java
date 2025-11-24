@@ -20,6 +20,8 @@ public class CarritoActivity extends BaseActivity {
         setContent(R.layout.activity_carrito);
         setupBottomNavigation();
         setupTopNavigation();
+        // Ensure drawer is set up (inherited from BaseActivity, but ensure it's accessible)
+        setupDrawer();
         recyclerCarrito = findViewById(R.id.recyclerCarrito);
         tvTotal = findViewById(R.id.tvTotal);
 

@@ -3,16 +3,23 @@ package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 public class BaseActivity extends AppCompatActivity {
 
     private FrameLayout container;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +28,9 @@ public class BaseActivity extends AppCompatActivity {
 
         container = findViewById(R.id.container);
         setContent(R.layout.activity_main);
+        
+        // Setup drawer navigation
+        setupDrawer();
     }
 
     protected void setContent(@LayoutRes int layoutResId) {
@@ -79,6 +89,14 @@ public class BaseActivity extends AppCompatActivity {
         LinearLayout tabCuadrado = findViewById(R.id.tab_cuadrado);
         LinearLayout tabMenu = findViewById(R.id.tab_menu);
 
+        // Ensure drawer is initialized
+        if (drawerLayout == null) {
+            drawerLayout = findViewById(R.id.drawer_layout);
+        }
+        if (navigationView == null) {
+            navigationView = findViewById(R.id.nav_view);
+        }
+
         // Constantes para los índices de tabs
         final int TAB_HOME = 0;
         final int TAB_DESCUENTOS = 1;
@@ -114,7 +132,10 @@ public class BaseActivity extends AppCompatActivity {
 
             } else if (id == R.id.tab_menu) {
                 tabIndex = TAB_MENU;
-
+                // Open drawer when menu button is clicked
+                if (drawerLayout != null && navigationView != null) {
+                    drawerLayout.openDrawer(navigationView);
+                }
             }
 
 
@@ -141,6 +162,46 @@ public class BaseActivity extends AppCompatActivity {
             // Make it clickable
             ivProfile.setClickable(true);
             ivProfile.setFocusable(true);
+        }
+    }
+
+    protected void setupDrawer() {
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(item -> {
+                // Handle navigation view item clicks here
+                int itemId = item.getItemId();
+                
+                if (itemId == R.id.nav_pedidos_curso) {
+                    // Navigate to PedidosEnCursoActivity (placeholder for now)
+                    Toast.makeText(this, "Pedidos en curso - Próximamente", Toast.LENGTH_SHORT).show();
+                    // Intent intent = new Intent(this, PedidosEnCursoActivity.class);
+                    // startActivity(intent);
+                } else if (itemId == R.id.nav_historial_pedidos) {
+                    // Navigate to HistorialPedidosActivity (placeholder for now)
+                    Toast.makeText(this, "Historial de pedidos - Próximamente", Toast.LENGTH_SHORT).show();
+                    // Intent intent = new Intent(this, HistorialPedidosActivity.class);
+                    // startActivity(intent);
+                } else if (itemId == R.id.nav_configuracion) {
+                    // Navigate to ConfiguracionActivity (placeholder for now)
+                    Toast.makeText(this, "Configuración - Próximamente", Toast.LENGTH_SHORT).show();
+                    // Intent intent = new Intent(this, ConfiguracionActivity.class);
+                    // startActivity(intent);
+                } else if (itemId == R.id.nav_carga_documentos) {
+                    // Navigate to CargaDocumentosActivity (placeholder for now)
+                    Toast.makeText(this, "Carga de documentos - Próximamente", Toast.LENGTH_SHORT).show();
+                    // Intent intent = new Intent(this, CargaDocumentosActivity.class);
+                    // startActivity(intent);
+                }
+                
+                // Close drawer after selection
+                if (drawerLayout != null) {
+                    drawerLayout.closeDrawer(navigationView);
+                }
+                return true;
+            });
         }
     }
 

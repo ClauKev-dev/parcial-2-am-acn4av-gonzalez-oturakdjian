@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item
+        android:id="@+id/nav_pedidos_curso"
+        android:icon="@drawable/ic_orders"
+        android:title="Pedidos en curso" />
+    
+    <item
+        android:id="@+id/nav_historial_pedidos"
+        android:icon="@drawable/ic_history"
+        android:title="Historial de pedidos" />
+    
+    <item
+        android:id="@+id/nav_configuracion"
+        android:icon="@drawable/ic_settings"
+        android:title="Configuración" />
+    
+    <item
+        android:id="@+id/nav_carga_documentos"
+        android:icon="@drawable/ic_document_upload"
+        android:title="Carga de documentos" />
+    
+</menu>
+

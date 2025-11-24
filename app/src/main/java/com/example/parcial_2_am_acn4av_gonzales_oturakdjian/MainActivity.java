@@ -65,6 +65,7 @@ public class MainActivity extends BaseActivity {
 
         setupBottomNavigation();
         setupTopNavigation();
+        setupDrawer();
         tvCartCount = findViewById(R.id.tv_cart_count);
         setupCarousel();
 

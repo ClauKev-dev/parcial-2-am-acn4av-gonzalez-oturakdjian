@@ -24,6 +24,8 @@ public class DescuentosActivity extends BaseActivity {
         setContent(R.layout.activity_descuentos);
         setupBottomNavigation();
         setupTopNavigation();
+        // Ensure drawer is set up (inherited from BaseActivity, but ensure it's accessible)
+        setupDrawer();
         
         // Highlight the descuentos tab
         navigateToTab(1); // TAB_DESCUENTOS = 1
