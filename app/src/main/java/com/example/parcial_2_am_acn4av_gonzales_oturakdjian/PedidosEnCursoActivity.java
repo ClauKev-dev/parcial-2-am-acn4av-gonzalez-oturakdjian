@@ -20,11 +20,15 @@ import java.util.Locale;
 
 public class PedidosEnCursoActivity extends BaseActivity {
 
-    private RecyclerView recyclerPedidos;
-    private TextView tvEmpty;
-    private PedidosAdapter adapter;
+    private RecyclerView recyclerPedidosEnCurso;
+    private RecyclerView recyclerPedidosHistorial;
+    private TextView tvEmptyEnCurso;
+    private TextView tvEmptyHistorial;
+    private PedidosAdapter adapterEnCurso;
+    private PedidosAdapter adapterHistorial;
     private FirebaseFirestore db;
-    private List<Order> pedidosList;
+    private List<Order> pedidosEnCursoList;
+    private List<Order> pedidosHistorialList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +38,20 @@ public class PedidosEnCursoActivity extends BaseActivity {
         setupTopNavigation();
         setupDrawer();
 
-        recyclerPedidos = findViewById(R.id.recyclerPedidos);
-        tvEmpty = findViewById(R.id.tvEmpty);
+        recyclerPedidosEnCurso = findViewById(R.id.recyclerPedidosEnCurso);
+        recyclerPedidosHistorial = findViewById(R.id.recyclerPedidosHistorial);
+        tvEmptyEnCurso = findViewById(R.id.tvEmptyEnCurso);
+        tvEmptyHistorial = findViewById(R.id.tvEmptyHistorial);
         db = FirebaseFirestore.getInstance();
-        pedidosList = new ArrayList<>();
+        pedidosEnCursoList = new ArrayList<>();
+        pedidosHistorialList = new ArrayList<>();
 
-        recyclerPedidos.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new PedidosAdapter(this, pedidosList);
-        recyclerPedidos.setAdapter(adapter);
+        recyclerPedidosEnCurso.setLayoutManager(new LinearLayoutManager(this));
+        recyclerPedidosHistorial.setLayoutManager(new LinearLayoutManager(this));
+        adapterEnCurso = new PedidosAdapter(this, pedidosEnCursoList);
+        adapterHistorial = new PedidosAdapter(this, pedidosHistorialList);
+        recyclerPedidosEnCurso.setAdapter(adapterEnCurso);
+        recyclerPedidosHistorial.setAdapter(adapterHistorial);
 
         cargarPedidos();
     }
@@ -55,8 +65,10 @@ public class PedidosEnCursoActivity extends BaseActivity {
     private void cargarPedidos() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            tvEmpty.setVisibility(View.VISIBLE);
-            recyclerPedidos.setVisibility(View.GONE);
+            tvEmptyEnCurso.setVisibility(View.VISIBLE);
+            recyclerPedidosEnCurso.setVisibility(View.GONE);
+            tvEmptyHistorial.setVisibility(View.VISIBLE);
+            recyclerPedidosHistorial.setVisibility(View.GONE);
             return;
         }
 
@@ -64,27 +76,49 @@ public class PedidosEnCursoActivity extends BaseActivity {
                 .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    pedidosList.clear();
+                    pedidosEnCursoList.clear();
+                    pedidosHistorialList.clear();
+                    
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Order order = document.toObject(Order.class);
                         order.setId(document.getId());
-                        pedidosList.add(order);
+                        
+                        // Separar pedidos en curso del historial
+                        String status = order.getStatus();
+                        if (status != null && status.equals("en_curso")) {
+                            pedidosEnCursoList.add(order);
+                        } else {
+                            // Historial: completados y cancelados
+                            pedidosHistorialList.add(order);
+                        }
                     }
 
-                    if (pedidosList.isEmpty()) {
-                        tvEmpty.setText("No hay pedidos");
-                        tvEmpty.setVisibility(View.VISIBLE);
-                        recyclerPedidos.setVisibility(View.GONE);
+                    // Actualizar sección de pedidos en curso
+                    if (pedidosEnCursoList.isEmpty()) {
+                        tvEmptyEnCurso.setVisibility(View.VISIBLE);
+                        recyclerPedidosEnCurso.setVisibility(View.GONE);
                     } else {
-                        tvEmpty.setVisibility(View.GONE);
-                        recyclerPedidos.setVisibility(View.VISIBLE);
-                        adapter.notifyDataSetChanged();
+                        tvEmptyEnCurso.setVisibility(View.GONE);
+                        recyclerPedidosEnCurso.setVisibility(View.VISIBLE);
+                        adapterEnCurso.notifyDataSetChanged();
+                    }
+
+                    // Actualizar sección de historial
+                    if (pedidosHistorialList.isEmpty()) {
+                        tvEmptyHistorial.setVisibility(View.VISIBLE);
+                        recyclerPedidosHistorial.setVisibility(View.GONE);
+                    } else {
+                        tvEmptyHistorial.setVisibility(View.GONE);
+                        recyclerPedidosHistorial.setVisibility(View.VISIBLE);
+                        adapterHistorial.notifyDataSetChanged();
                     }
                 })
                 .addOnFailureListener(e -> {
                     android.util.Log.e("PedidosEnCursoActivity", "Error al cargar pedidos: " + e.getMessage(), e);
-                    tvEmpty.setVisibility(View.VISIBLE);
-                    recyclerPedidos.setVisibility(View.GONE);
+                    tvEmptyEnCurso.setVisibility(View.VISIBLE);
+                    recyclerPedidosEnCurso.setVisibility(View.GONE);
+                    tvEmptyHistorial.setVisibility(View.VISIBLE);
+                    recyclerPedidosHistorial.setVisibility(View.GONE);
                 });
     }
 

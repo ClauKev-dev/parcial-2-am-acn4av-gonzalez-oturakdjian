@@ -11,24 +11,82 @@
         android:text="Mis Pedidos"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:layout_alignParentTop="true" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerPedidos"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tvTitulo"
-        android:paddingBottom="80dp" />
-
+    <!-- Pedidos en Curso Section -->
     <TextView
-        android:id="@+id/tvEmpty"
+        android:id="@+id/tvTituloEnCurso"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No hay pedidos"
-        android:textSize="16sp"
-        android:layout_centerInParent="true"
+        android:text="Pedidos en Curso"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"
+        android:layout_below="@id/tvTitulo" />
+
+    <TextView
+        android:id="@+id/tvEmptyEnCurso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No hay pedidos en curso"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@id/tvTituloEnCurso"
         android:visibility="gone" />
 
-</RelativeLayout>
+    <ScrollView
+        android:id="@+id/scrollViewEnCurso"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginBottom="24dp"
+        android:layout_below="@id/tvTituloEnCurso"
+        android:fillViewport="true">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerPedidosEnCurso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+    </ScrollView>
+
+    <!-- Historial de Pedidos Section -->
+    <TextView
+        android:id="@+id/tvTituloHistorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historial de Pedidos"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/scrollViewEnCurso" />
+
+    <TextView
+        android:id="@+id/tvEmptyHistorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No hay pedidos en el historial"
+        android:textSize="14sp"
+        android:textColor="#666"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@id/tvTituloHistorial"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:id="@+id/scrollViewHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginBottom="80dp"
+        android:layout_below="@id/tvTituloHistorial"
+        android:fillViewport="true">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerPedidosHistorial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+    </ScrollView>
+
+</RelativeLayout>

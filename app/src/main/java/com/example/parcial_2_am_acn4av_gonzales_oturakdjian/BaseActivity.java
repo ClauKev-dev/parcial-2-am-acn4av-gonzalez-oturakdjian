@@ -178,11 +178,6 @@ public class BaseActivity extends AppCompatActivity {
                     // Navigate to PedidosEnCursoActivity
                     Intent intent = new Intent(this, PedidosEnCursoActivity.class);
                     startActivity(intent);
-                } else if (itemId == R.id.nav_historial_pedidos) {
-                    // Navigate to HistorialPedidosActivity (placeholder for now)
-                    Toast.makeText(this, "Historial de pedidos - Próximamente", Toast.LENGTH_SHORT).show();
-                    // Intent intent = new Intent(this, HistorialPedidosActivity.class);
-                    // startActivity(intent);
                 } else if (itemId == R.id.nav_configuracion) {
                     // Navigate to ConfiguracionActivity (placeholder for now)
                     Toast.makeText(this, "Configuración - Próximamente", Toast.LENGTH_SHORT).show();
