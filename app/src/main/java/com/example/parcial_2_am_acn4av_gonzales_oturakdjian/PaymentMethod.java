@@ -7,21 +7,20 @@ public class PaymentMethod {
     
     private String id;
     private String userId;
-    private String type; // "debit", "credit", "mercado_pago"
-    private String cardNumber; // Last 4 digits for cards, null for Mercado Pago
-    private String cardHolder; // For cards
-    private String cardBrand; // "Visa", "Mastercard", "Naranja X", etc.
-    private String expiryDate; // For cards
-    private String mercadoPagoEmail; // For Mercado Pago
-    private String mercadoPagoPhone; // For Mercado Pago
+    private String type;
+    private String cardNumber;
+    private String cardHolder;
+    private String cardBrand;
+    private String expiryDate;
+    private String mercadoPagoEmail;
+    private String mercadoPagoPhone;
     private boolean isDefault;
     private com.google.firebase.Timestamp createdAt;
 
-    // Constructor vacío necesario para Firestore
     public PaymentMethod() {
     }
 
-    // Constructor para tarjetas
+
     public PaymentMethod(String userId, String type, String cardNumber, String cardHolder, String cardBrand, String expiryDate) {
         this.userId = userId;
         this.type = type;
@@ -32,7 +31,7 @@ public class PaymentMethod {
         this.isDefault = false;
     }
 
-    // Constructor para Mercado Pago
+
     public PaymentMethod(String userId, String email, String phone) {
         this.userId = userId;
         this.type = TYPE_MERCADO_PAGO;

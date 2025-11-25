@@ -54,19 +54,19 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.PedidoVi
                 status = "en_curso";
             }
             String statusText = "";
-            int statusColor = 0xFF666666; // Gray default
+            int statusColor = 0xFF666666;
             switch (status) {
                 case "en_curso":
                     statusText = "En Curso";
-                    statusColor = 0xFF70CC7C; // Green
+                    statusColor = 0xFF70CC7C;
                     break;
                 case "completado":
                     statusText = "Completado";
-                    statusColor = 0xFF4CAF50; // Dark green
+                    statusColor = 0xFF4CAF50;
                     break;
                 case "cancelado":
                     statusText = "Cancelado";
-                    statusColor = 0xFFFF4444; // Red
+                    statusColor = 0xFFFF4444;
                     break;
                 default:
                     statusText = status;
@@ -76,14 +76,12 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.PedidoVi
             holder.tvStatus.setTextColor(statusColor);
         }
 
-        // Configurar productos
         if (pedido.getProducts() != null && !pedido.getProducts().isEmpty()) {
             ProductosPedidoAdapter productosAdapter = new ProductosPedidoAdapter(pedido.getProducts());
             holder.recyclerProductos.setLayoutManager(new LinearLayoutManager(activity));
             holder.recyclerProductos.setAdapter(productosAdapter);
         }
 
-        // Manejar expansión/colapso
         boolean isExpanded = expandedItems.get(position) != null && expandedItems.get(position);
         holder.llProductos.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         holder.ivExpand.setRotation(isExpanded ? 180 : 0);
@@ -117,7 +115,6 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.PedidoVi
         }
     }
 
-    // Adapter interno para productos del pedido
     private static class ProductosPedidoAdapter extends RecyclerView.Adapter<ProductosPedidoAdapter.ProductoViewHolder> {
         private List<Product> productos;
 

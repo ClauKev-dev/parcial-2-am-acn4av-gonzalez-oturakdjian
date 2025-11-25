@@ -10,18 +10,17 @@ public class Order {
     private String userId;
     private List<Product> products;
     private double total;
-    private String status; // "en_curso", "completado", "cancelado"
-    private String cardNumber; // Últimos 4 dígitos
+    private String status;
+    private String cardNumber;
     private String cardHolder;
-    private String paymentMethodId; // ID of the payment method used
-    private String paymentMethodType; // "debit", "credit", "mercado_pago"
-    private String paymentMethodBrand; // Card brand (Visa, Mastercard, Naranja X, etc.)
-    private int installments; // Number of installments (0 if not applicable)
+    private String paymentMethodId;
+    private String paymentMethodType;
+    private String paymentMethodBrand;
+    private int installments;
     @ServerTimestamp
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    // Constructor vacío necesario para Firestore
     public Order() {
     }
 

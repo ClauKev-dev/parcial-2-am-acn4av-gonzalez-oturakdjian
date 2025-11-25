@@ -40,8 +40,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(ProductViewHolder holder, int position) {
         Product product = productList.get(position);
-        
-        // Load image from URL using Glide
+
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(context)
                     .load(product.getImageUrl())
@@ -50,12 +49,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     .centerCrop()
                     .into(holder.ivProduct);
         } else {
-            // Fallback to default image if no URL
             holder.ivProduct.setImageResource(R.drawable.ic_launcher_background);
         }
         
         holder.tvName.setText(product.getName());
-        // Mostrar solo el precio individual, no el precio * cantidad
         String precioFormateado = String.format(java.util.Locale.getDefault(), "$%.2f", product.getPrice());
         holder.tvPrice.setText(precioFormateado);
 

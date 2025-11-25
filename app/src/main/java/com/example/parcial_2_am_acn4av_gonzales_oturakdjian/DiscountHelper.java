@@ -7,17 +7,11 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DiscountHelper {
-    private static final double SENIOR_DISCOUNT_PERCENTAGE = 0.15; // 15%
-    private static final double PAYMENT_METHOD_DISCOUNT_PERCENTAGE = 0.25; // 25%
+    private static final double SENIOR_DISCOUNT_PERCENTAGE = 0.15;
+    private static final double PAYMENT_METHOD_DISCOUNT_PERCENTAGE = 0.25;
     private static final int WOMAN_AGE_THRESHOLD = 60;
     private static final int MAN_AGE_THRESHOLD = 65;
 
-    /**
-     * Calculates if a user qualifies for senior discount
-     * @param birthDateString Birth date in format "dd/MM/yyyy"
-     * @param gender "Mujer" or "Hombre"
-     * @return true if user qualifies for discount
-     */
     public static boolean qualifiesForDiscount(String birthDateString, String gender) {
         if (birthDateString == null || birthDateString.isEmpty() || 
             gender == null || gender.isEmpty()) {
@@ -26,7 +20,7 @@ public class DiscountHelper {
 
         int age = calculateAge(birthDateString);
         if (age < 0) {
-            return false; // Invalid date
+            return false;
         }
 
         if (gender.equalsIgnoreCase("Mujer") || gender.equalsIgnoreCase("Femenino") || 
@@ -40,11 +34,6 @@ public class DiscountHelper {
         return false;
     }
 
-    /**
-     * Calculates age from birth date string
-     * @param birthDateString Date in format "dd/MM/yyyy"
-     * @return age in years, or -1 if invalid
-     */
     public static int calculateAge(String birthDateString) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -58,8 +47,7 @@ public class DiscountHelper {
             Calendar today = Calendar.getInstance();
 
             int age = today.get(Calendar.YEAR) - birth.get(Calendar.YEAR);
-            
-            // Check if birthday hasn't occurred this year
+
             if (today.get(Calendar.DAY_OF_YEAR) < birth.get(Calendar.DAY_OF_YEAR)) {
                 age--;
             }
@@ -71,12 +59,6 @@ public class DiscountHelper {
         }
     }
 
-    /**
-     * Applies discount to a total amount
-     * @param total Original total
-     * @param qualifiesForDiscount Whether user qualifies
-     * @return Discounted total
-     */
     public static double applyDiscount(double total, boolean qualifiesForDiscount) {
         if (qualifiesForDiscount) {
             return total * (1 - SENIOR_DISCOUNT_PERCENTAGE);
@@ -84,12 +66,6 @@ public class DiscountHelper {
         return total;
     }
 
-    /**
-     * Gets the discount amount
-     * @param total Original total
-     * @param qualifiesForDiscount Whether user qualifies
-     * @return Discount amount
-     */
     public static double getDiscountAmount(double total, boolean qualifiesForDiscount) {
         if (qualifiesForDiscount) {
             return total * SENIOR_DISCOUNT_PERCENTAGE;
@@ -97,11 +73,6 @@ public class DiscountHelper {
         return 0.0;
     }
 
-    /**
-     * Checks if a payment method qualifies for discount
-     * @param paymentMethod PaymentMethod object
-     * @return true if payment method has discount
-     */
     public static boolean paymentMethodHasDiscount(PaymentMethod paymentMethod) {
         if (paymentMethod == null) {
             return false;
@@ -109,13 +80,11 @@ public class DiscountHelper {
         
         String type = paymentMethod.getType();
         String brand = paymentMethod.getCardBrand();
-        
-        // Mercado Pago has 25% discount
+
         if (PaymentMethod.TYPE_MERCADO_PAGO.equals(type)) {
             return true;
         }
-        
-        // Naranja X has 25% discount
+
         if (brand != null && brand.equalsIgnoreCase("Naranja X")) {
             return true;
         }
@@ -123,12 +92,6 @@ public class DiscountHelper {
         return false;
     }
 
-    /**
-     * Applies payment method discount to total
-     * @param total Original total
-     * @param paymentMethod PaymentMethod object
-     * @return Discounted total
-     */
     public static double applyPaymentMethodDiscount(double total, PaymentMethod paymentMethod) {
         if (paymentMethodHasDiscount(paymentMethod)) {
             return total * (1 - PAYMENT_METHOD_DISCOUNT_PERCENTAGE);
@@ -136,12 +99,6 @@ public class DiscountHelper {
         return total;
     }
 
-    /**
-     * Gets payment method discount amount
-     * @param total Original total
-     * @param paymentMethod PaymentMethod object
-     * @return Discount amount
-     */
     public static double getPaymentMethodDiscountAmount(double total, PaymentMethod paymentMethod) {
         if (paymentMethodHasDiscount(paymentMethod)) {
             return total * PAYMENT_METHOD_DISCOUNT_PERCENTAGE;
@@ -149,28 +106,15 @@ public class DiscountHelper {
         return 0.0;
     }
 
-    /**
-     * Checks if payment method supports installments
-     * @param paymentMethod PaymentMethod object
-     * @return true if supports installments
-     */
     public static boolean supportsInstallments(PaymentMethod paymentMethod) {
         if (paymentMethod == null) {
             return false;
         }
-        
-        // Visa credit cards support 6 installments with no interest
+
         return PaymentMethod.TYPE_CREDIT.equals(paymentMethod.getType()) &&
                "Visa".equalsIgnoreCase(paymentMethod.getCardBrand());
     }
 
-    /**
-     * Applies both senior discount and payment method discount
-     * @param total Original total
-     * @param qualifiesForSeniorDiscount Whether user qualifies for senior discount
-     * @param paymentMethod PaymentMethod object
-     * @return Final discounted total
-     */
     public static double applyAllDiscounts(double total, boolean qualifiesForSeniorDiscount, PaymentMethod paymentMethod) {
         double discountedTotal = total;
         
@@ -187,13 +131,6 @@ public class DiscountHelper {
         return discountedTotal;
     }
 
-    /**
-     * Gets total discount amount (senior + payment method)
-     * @param total Original total
-     * @param qualifiesForSeniorDiscount Whether user qualifies for senior discount
-     * @param paymentMethod PaymentMethod object
-     * @return Total discount amount
-     */
     public static double getTotalDiscountAmount(double total, boolean qualifiesForSeniorDiscount, PaymentMethod paymentMethod) {
         double seniorDiscount = qualifiesForSeniorDiscount ? getDiscountAmount(total, true) : 0.0;
         double totalAfterSenior = total - seniorDiscount;

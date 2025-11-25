@@ -7,14 +7,12 @@ public class Product {
     private String name;
     private double price;
     private int quantity;
-    private String id; // Firebase document ID
+    private String id;
 
-    // Constructor for Firebase
     public Product() {
         this.quantity = 1;
     }
 
-    // Constructor with URL
     public Product(String imageUrl, String name, double price) {
         this.imageUrl = imageUrl;
         this.name = name;
@@ -22,12 +20,11 @@ public class Product {
         this.quantity = 1;
     }
 
-    // Legacy constructor for resource ID (for backward compatibility)
     public Product(int imageResId, String name, double price) {
         this.name = name;
         this.price = price;
         this.quantity = 1;
-        this.imageUrl = null; // Will use resource ID
+        this.imageUrl = null;
     }
 
     public String getImageUrl() { return imageUrl; }

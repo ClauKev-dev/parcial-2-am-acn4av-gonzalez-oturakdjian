@@ -33,8 +33,7 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
     @Override
     public void onBindViewHolder(CarritoViewHolder holder, int position) {
         Product producto = carrito.get(position);
-        
-        // Load image from URL using Glide
+
         if (producto.getImageUrl() != null && !producto.getImageUrl().isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(producto.getImageUrl())
@@ -43,7 +42,6 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
                     .centerCrop()
                     .into(holder.ivProduct);
         } else {
-            // Fallback to default image if no URL
             holder.ivProduct.setImageResource(R.drawable.ic_launcher_background);
         }
         
@@ -53,7 +51,6 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
 
         holder.btnIncrease.setOnClickListener(v -> {
             producto.increaseQuantity();
-            // Actualizar en Firestore
             CarritoManager.actualizarCantidadProducto(producto, producto.getQuantity());
             notifyItemChanged(position);
             activity.actualizarTotal();
@@ -62,13 +59,10 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
         holder.btnDecrease.setOnClickListener(v -> {
             if (producto.getQuantity() > 1) {
                 producto.setQuantity(producto.getQuantity() - 1);
-                // Actualizar en Firestore
                 CarritoManager.actualizarCantidadProducto(producto, producto.getQuantity());
                 notifyItemChanged(position);
             } else {
-                // Eliminar producto del carrito y de Firestore
                 CarritoManager.eliminarProducto(producto);
-                // Actualizar la lista del adapter con la lista actualizada de CarritoManager
                 carrito = CarritoManager.getCarrito();
                 notifyDataSetChanged();
             }

@@ -654,7 +654,6 @@ public class CarritoActivity extends BaseActivity {
             return;
         }
 
-        // Create product copy
         List<Product> productosPedido = new ArrayList<>();
         for (Product p : carrito) {
             Product copia = new Product(p.getImageUrl(), p.getName(), p.getPrice());
@@ -662,7 +661,6 @@ public class CarritoActivity extends BaseActivity {
             productosPedido.add(copia);
         }
 
-        // Get user data and apply all discounts
         db.collection("users").document(user.getUid())
             .get()
             .addOnSuccessListener(documentSnapshot -> {
@@ -677,8 +675,7 @@ public class CarritoActivity extends BaseActivity {
                 } else {
                     finalTotal = DiscountHelper.applyPaymentMethodDiscount(totalCalculado, paymentMethod);
                 }
-                
-                // Check for installments
+
                 int installments = 0;
                 if (DiscountHelper.supportsInstallments(paymentMethod)) {
                     // Show dialog for installments selection
@@ -710,7 +707,6 @@ public class CarritoActivity extends BaseActivity {
     }
 
     private void procesarPagoConMetodo(PaymentMethod paymentMethod, List<Product> productosPedido, double finalTotal, String userId, int installments) {
-        // Create order
         Order order = new Order();
         order.setUserId(userId);
         order.setProducts(productosPedido);
@@ -729,7 +725,6 @@ public class CarritoActivity extends BaseActivity {
             order.setCardHolder(paymentMethod.getCardHolder());
         }
 
-        // Save order to Firestore
         Map<String, Object> orderData = new HashMap<>();
         orderData.put("userId", order.getUserId());
         orderData.put("products", productosPedido);

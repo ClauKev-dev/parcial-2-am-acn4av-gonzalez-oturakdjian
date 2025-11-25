@@ -49,7 +49,6 @@ public class SubirRecetaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subir_receta);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -59,8 +58,7 @@ public class SubirRecetaActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupTopNavigation();
         setupDrawer();
-        // Highlight the menu tab since we're in SubirRecetaActivity
-        navigateToTab(4); // TAB_MENU = 4
+        navigateToTab(4);
     }
 
     private void initializeViews() {
@@ -94,19 +92,16 @@ public class SubirRecetaActivity extends AppCompatActivity {
             selectedFileUri = data.getData();
             
             if (selectedFileUri != null) {
-                // Get file name
                 String uriString = selectedFileUri.toString();
                 if (uriString.contains("/")) {
                     selectedFileName = uriString.substring(uriString.lastIndexOf("/") + 1);
                 } else {
                     selectedFileName = "archivo_seleccionado";
                 }
-                
-                // Check if it's an image or PDF
+
                 String mimeType = getContentResolver().getType(selectedFileUri);
                 isImageFile = mimeType != null && mimeType.startsWith("image/");
-                
-                // Update UI
+
                 mostrarArchivoSeleccionado();
             }
         }
@@ -119,7 +114,6 @@ public class SubirRecetaActivity extends AppCompatActivity {
         tvNombreArchivo.setText(selectedFileName);
         
         if (isImageFile) {
-            // Show image preview
             ivPreview.setVisibility(View.VISIBLE);
             llPdfIcon.setVisibility(View.GONE);
             Glide.with(this)
@@ -127,12 +121,10 @@ public class SubirRecetaActivity extends AppCompatActivity {
                     .centerCrop()
                     .into(ivPreview);
         } else {
-            // Show PDF icon
             ivPreview.setVisibility(View.GONE);
             llPdfIcon.setVisibility(View.VISIBLE);
         }
-        
-        // Automatically upload the file when selected
+
         subirReceta();
     }
 
@@ -156,12 +148,10 @@ public class SubirRecetaActivity extends AppCompatActivity {
             Toast.makeText(this, "Por favor selecciona un archivo", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        // Disable select button during upload
+
         btnSeleccionarArchivo.setEnabled(false);
         btnSeleccionarArchivo.setText("Subiendo...");
-        
-        // Create storage reference
+
         String userId = currentUser.getUid();
         String timestamp = String.valueOf(System.currentTimeMillis());
         String fileExtension = isImageFile ? 
@@ -172,13 +162,10 @@ public class SubirRecetaActivity extends AppCompatActivity {
         StorageReference recetaRef = storageRef.child("recetas")
                 .child(userId)
                 .child("receta_" + timestamp + fileExtension);
-        
-        // Upload file
+
         recetaRef.putFile(selectedFileUri)
                 .addOnSuccessListener(taskSnapshot -> {
-                    // Get download URL
                     recetaRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        // Save metadata to Firestore
                         Map<String, Object> recetaData = new HashMap<>();
                         recetaData.put("userId", userId);
                         recetaData.put("userEmail", currentUser.getEmail());
@@ -186,7 +173,7 @@ public class SubirRecetaActivity extends AppCompatActivity {
                         recetaData.put("fileUrl", uri.toString());
                         recetaData.put("fileType", isImageFile ? "image" : "pdf");
                         recetaData.put("timestamp", System.currentTimeMillis());
-                        recetaData.put("status", "pending"); // pending, approved, rejected
+                        recetaData.put("status", "pending");
                         recetaData.put("reviewedBy", null);
                         recetaData.put("reviewedAt", null);
                         
@@ -194,8 +181,7 @@ public class SubirRecetaActivity extends AppCompatActivity {
                                 .add(recetaData)
                                 .addOnSuccessListener(documentReference -> {
                                     Toast.makeText(this, "Receta subida exitosamente. Será revisada manualmente.", Toast.LENGTH_LONG).show();
-                                    
-                                    // Reset UI
+
                                     eliminarArchivo();
                                     btnSeleccionarArchivo.setText("Seleccionar Archivo (PDF o Imagen)");
                                     btnSeleccionarArchivo.setEnabled(true);
@@ -334,7 +320,6 @@ public class SubirRecetaActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_configuracion) {
                     Toast.makeText(this, "Configuración - Próximamente", Toast.LENGTH_SHORT).show();
                 } else if (itemId == R.id.nav_carga_documentos) {
-                    // Already in SubirRecetaActivity
                     Toast.makeText(this, "Ya estás en la página de carga de recetas", Toast.LENGTH_SHORT).show();
                 }
                 

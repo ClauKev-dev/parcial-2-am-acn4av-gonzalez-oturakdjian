@@ -31,38 +31,35 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
         initializeViews();
         setupListeners();
         setupTextWatchers();
 
-        // Pre-fill email if coming from RegisterActivity
         String email = getIntent().getStringExtra("email");
         if (email != null && !email.isEmpty()) {
             etEmail.setText(email);
         }
 
-        // Check if user is already logged in
         checkCurrentUser();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // Check if user is signed in when activity starts
+
         checkCurrentUser();
     }
 
     private void checkCurrentUser() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            // Cargar carrito del usuario antes de redirigir
+
             CarritoManager.cargarCarrito(new CarritoManager.CarritoLoadListener() {
                 @Override
                 public void onCarritoLoaded(List<Product> carrito) {
-                    // User is already logged in, redirect to MainActivity
+
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -71,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(String error) {
-                    // Aún así redirigir aunque haya error al cargar el carrito
+
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -93,14 +90,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        // Login button click (inside card)
         btnLogin.setOnClickListener(v -> {
             if (validateForm()) {
                 performLogin();
             }
         });
 
-        // Register button click (bottom)
         if (btnRegisterBottom != null) {
             btnRegisterBottom.setOnClickListener(v -> {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -108,7 +103,6 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
 
-        // Forgot password click
         tvForgotPassword.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             if (email.isEmpty()) {
@@ -122,7 +116,6 @@ public class LoginActivity extends AppCompatActivity {
             sendPasswordResetEmail(email);
         });
 
-        // Focus change listeners for dynamic background change
         etEmail.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 etEmail.setBackgroundResource(R.drawable.input_background_focused);
@@ -141,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupTextWatchers() {
-        // Email text watcher - clears error when user types
+
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -157,7 +150,6 @@ public class LoginActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // Password text watcher - clears error when user types
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -179,10 +171,8 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        // Clear previous errors
         hideAllErrors();
 
-        // Validate email
         if (email.isEmpty()) {
             showError(tvEmailError, getString(R.string.error_email_required));
             isValid = false;
@@ -191,7 +181,6 @@ public class LoginActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        // Validate password
         if (password.isEmpty()) {
             showError(tvPasswordError, getString(R.string.error_password_required));
             isValid = false;
@@ -223,26 +212,20 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        // Disable button during login
         btnLogin.setEnabled(false);
         btnLogin.setText("Iniciando sesión...");
 
-        // Sign in with Firebase
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Login successful
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Show success message
                             tvSuccessMessage.setText(getString(R.string.success_login));
                             tvSuccessMessage.setVisibility(View.VISIBLE);
 
-                            // Cargar carrito del usuario antes de navegar
                             CarritoManager.cargarCarrito(new CarritoManager.CarritoLoadListener() {
                                 @Override
                                 public void onCarritoLoaded(List<Product> carrito) {
-                                    // Navigate to MainActivity after successful login
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
@@ -251,7 +234,6 @@ public class LoginActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onError(String error) {
-                                    // Aún así navegar aunque haya error al cargar el carrito
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
@@ -260,7 +242,6 @@ public class LoginActivity extends AppCompatActivity {
                             });
                         }
                     } else {
-                        // Login failed
                         btnLogin.setEnabled(true);
                         btnLogin.setText(getString(R.string.login_button));
                         

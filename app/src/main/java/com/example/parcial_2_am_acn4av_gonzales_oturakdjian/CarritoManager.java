@@ -26,9 +26,6 @@ public class CarritoManager {
         void onError(String error);
     }
 
-    /**
-     * Carga el carrito del usuario actual desde Firestore
-     */
     public static void cargarCarrito(CarritoLoadListener listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -50,7 +47,6 @@ public class CarritoManager {
         db.collection("users").document(userId).collection("cart")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    // Guardar productos locales temporalmente antes de limpiar
                     List<Product> productosLocales = new ArrayList<>(carrito);
                     carrito.clear();
                     
@@ -59,8 +55,7 @@ public class CarritoManager {
                         product.setId(document.getId());
                         carrito.add(product);
                     }
-                    
-                    // Si hay productos locales que no están en Firestore, agregarlos
+
                     for (Product productoLocal : productosLocales) {
                         boolean existeEnFirestore = false;
                         for (Product productoFirestore : carrito) {
@@ -72,7 +67,6 @@ public class CarritoManager {
                             }
                         }
                         if (!existeEnFirestore && productoLocal.getId() == null) {
-                            // Producto local sin ID, agregarlo a Firestore
                             carrito.add(productoLocal);
                             agregarProductoEnFirestore(userId, productoLocal);
                         }
@@ -90,8 +84,7 @@ public class CarritoManager {
                     carritoCargando = false;
                     String errorMsg = e.getMessage();
                     Log.e(TAG, "Error al cargar carrito: " + errorMsg, e);
-                    
-                    // Verificar si es un error de permisos
+
                     if (errorMsg != null && (errorMsg.contains("permission") || errorMsg.contains("PERMISSION_DENIED"))) {
                         Log.e(TAG, "⚠️ ERROR DE PERMISOS al cargar carrito. Verifica las reglas de Firestore.");
                     }
@@ -102,9 +95,6 @@ public class CarritoManager {
                 });
     }
 
-    /**
-     * Agrega un producto al carrito del usuario actual
-     */
     public static void agregarProducto(Product product) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -125,8 +115,7 @@ public class CarritoManager {
         Log.d(TAG, "Carrito cargando: " + carritoCargando);
         Log.d(TAG, "Carrito cargado: " + carritoCargado);
         Log.d(TAG, "Productos en carrito local: " + carrito.size());
-        
-        // Verificar si el producto ya existe en el carrito local
+
         Product productoExistente = null;
         for (Product p : carrito) {
             if (p.getName() != null && p.getName().equals(product.getName())) {
@@ -137,13 +126,10 @@ public class CarritoManager {
         }
         
         if (productoExistente != null) {
-            // Producto ya existe en el carrito local, aumentar cantidad
             productoExistente.increaseQuantity();
             Log.d(TAG, "Producto existente, cantidad aumentada: " + productoExistente.getName() + " - Nueva cantidad: " + productoExistente.getQuantity());
-            // Actualizar en Firestore
             actualizarProductoEnFirestore(userId, productoExistente);
         } else {
-            // Crear una copia del producto para evitar referencias compartidas
             Product nuevoProducto = new Product(product.getImageUrl(), product.getName(), product.getPrice());
             nuevoProducto.setQuantity(1);
             if (product.getId() != null) {
@@ -152,14 +138,10 @@ public class CarritoManager {
             carrito.add(nuevoProducto);
             Log.d(TAG, "Nuevo producto agregado al carrito local: " + nuevoProducto.getName());
             Log.d(TAG, "Total productos en carrito local ahora: " + carrito.size());
-            // Agregar a Firestore
             agregarProductoEnFirestore(userId, nuevoProducto);
         }
     }
 
-    /**
-     * Actualiza la cantidad de un producto en el carrito
-     */
     public static void actualizarCantidadProducto(Product product, int nuevaCantidad) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -170,7 +152,6 @@ public class CarritoManager {
         String userId = user.getUid();
         
         if (nuevaCantidad <= 0) {
-            // Eliminar producto
             eliminarProducto(product);
         } else {
             product.setQuantity(nuevaCantidad);
@@ -178,9 +159,6 @@ public class CarritoManager {
         }
     }
 
-    /**
-     * Elimina un producto del carrito
-     */
     public static void eliminarProducto(Product product) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -200,9 +178,6 @@ public class CarritoManager {
         }
     }
 
-    /**
-     * Limpia el carrito del usuario actual
-     */
     public static void limpiarCarrito() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -212,8 +187,7 @@ public class CarritoManager {
 
         String userId = user.getUid();
         carrito.clear();
-        
-        // Eliminar todos los productos del carrito en Firestore
+
         db.collection("users").document(userId).collection("cart")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -225,25 +199,14 @@ public class CarritoManager {
                 .addOnFailureListener(e -> Log.e(TAG, "Error al limpiar carrito: " + e.getMessage()));
     }
 
-    /**
-     * Crea un carrito vacío para un nuevo usuario
-     */
     public static void crearCarritoVacio(String userId) {
-        // El carrito se crea automáticamente cuando se agrega el primer producto
-        // Solo necesitamos asegurarnos de que la estructura esté lista
         Log.d(TAG, "Carrito vacío creado para usuario: " + userId);
     }
 
-    /**
-     * Obtiene el carrito actual (puede estar desactualizado si no se ha cargado desde Firestore)
-     */
     public static List<Product> getCarrito() {
-        return new ArrayList<>(carrito); // Retornar copia para evitar modificaciones externas
+        return new ArrayList<>(carrito);
     }
 
-    /**
-     * Obtiene el total de items en el carrito
-     */
     public static int getTotalItems() {
         int total = 0;
         for (Product p : carrito) {
@@ -251,8 +214,6 @@ public class CarritoManager {
         }
         return total;
     }
-
-    // Métodos privados para interactuar con Firestore
 
     private static void agregarProductoEnFirestore(String userId, Product product) {
         Map<String, Object> productData = new HashMap<>();
@@ -276,33 +237,27 @@ public class CarritoManager {
                     Log.e(TAG, "✗ ERROR al agregar producto a Firestore: " + product.getName(), e);
                     Log.e(TAG, "Mensaje de error completo: " + errorMsg);
                     Log.e(TAG, "Tipo de error: " + e.getClass().getSimpleName());
-                    
-                    // Verificar si es un error de permisos
+
                     if (errorMsg != null && (errorMsg.contains("permission") || errorMsg.contains("PERMISSION_DENIED"))) {
                         Log.e(TAG, "⚠️ ERROR DE PERMISOS: Las reglas de Firestore no permiten escribir. Verifica las reglas de seguridad en Firebase Console.");
                         android.util.Log.e(TAG, "⚠️ Necesitas configurar las reglas de Firestore para permitir escritura en users/{userId}/cart");
                     } else {
                         android.util.Log.e(TAG, "✗ Error al guardar: " + errorMsg);
                     }
-                    // NO eliminar de la lista local si falla, mejor intentar de nuevo más tarde
-                    // carrito.remove(product);
                 });
     }
 
     private static void actualizarProductoEnFirestore(String userId, Product product) {
         if (product.getId() == null || product.getId().isEmpty()) {
-            // Si no tiene ID, buscar por nombre y actualizar o crear
             db.collection("users").document(userId).collection("cart")
                     .whereEqualTo("name", product.getName())
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {
-                            // Actualizar documento existente
                             DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
                             product.setId(doc.getId());
                             actualizarDocumento(userId, product);
                         } else {
-                            // Crear nuevo documento
                             agregarProductoEnFirestore(userId, product);
                         }
                     });

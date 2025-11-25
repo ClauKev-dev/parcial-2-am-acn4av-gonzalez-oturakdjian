@@ -50,7 +50,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -59,8 +58,7 @@ public class ProfileActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupTopNavigation();
         setupDrawer();
-        // Highlight the menu tab since we're in ProfileActivity
-        navigateToTab(4); // TAB_MENU = 4
+        navigateToTab(4);
         loadUserData();
     }
 
@@ -86,14 +84,12 @@ public class ProfileActivity extends AppCompatActivity {
             btnCancelEdit = findViewById(R.id.btn_cancel_edit);
             llEditButtons = findViewById(R.id.ll_edit_buttons);
             scrollView = findViewById(R.id.scroll_view);
-            
-            // Setup gender spinner
+
             genderAdapter = ArrayAdapter.createFromResource(
                 this, R.array.gender_options, android.R.layout.simple_spinner_item);
             genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerUserGender.setAdapter(genderAdapter);
-            
-            // Setup date picker for birthdate
+
             etUserBirthdate.setOnClickListener(v -> showDatePicker());
         } catch (Exception e) {
             android.util.Log.e("ProfileActivity", "Error initializing views", e);
@@ -117,7 +113,6 @@ public class ProfileActivity extends AppCompatActivity {
             },
             year, month, day
         );
-        // Set max date to today
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
@@ -133,15 +128,12 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         
         if (currentUser == null) {
-            // User not logged in, redirect to login
             redirectToLogin();
             return;
         }
 
-        // Set email from Auth
         tvUserEmail.setText(currentUser.getEmail());
 
-        // Load additional user data from Firestore
         db.collection("users").document(currentUser.getUid())
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -200,7 +192,6 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Error loading data, use defaults
                     tvUserName.setText(currentUser.getDisplayName() != null ? 
                             currentUser.getDisplayName() : "Usuario");
                     tvUserPhone.setText("No disponible");
@@ -222,20 +213,15 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void performLogout() {
-        // Disable button during logout
         btnLogout.setEnabled(false);
         btnLogout.setText("Cerrando sesión...");
 
-        // Limpiar carrito local antes de cerrar sesión
         CarritoManager.limpiarCarrito();
 
-        // Sign out from Firebase
         mAuth.signOut();
 
-        // Show success message
         Toast.makeText(this, getString(R.string.logout_success), Toast.LENGTH_SHORT).show();
 
-        // Redirect to LoginActivity
         redirectToLogin();
     }
 
@@ -253,8 +239,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
         
         isEditMode = true;
-        
-        // Hide TextViews and show EditTexts
+
         tvUserName.setVisibility(View.GONE);
         tvUserEmail.setVisibility(View.GONE);
         tvUserPhone.setVisibility(View.GONE);
@@ -270,15 +255,13 @@ public class ProfileActivity extends AppCompatActivity {
         etUserAddress.setVisibility(View.VISIBLE);
         spinnerUserGender.setVisibility(View.VISIBLE);
         etUserBirthdate.setVisibility(View.VISIBLE);
-        
-        // Populate EditTexts with current values
+
         etUserName.setText(tvUserName.getText().toString());
         etUserEmail.setText(tvUserEmail.getText().toString());
         etUserPhone.setText(tvUserPhone.getText().toString());
         etUserDni.setText(tvUserDni.getText().toString());
         etUserAddress.setText(tvUserAddress.getText().toString());
-        
-        // Set current gender in spinner
+
         String currentGender = tvUserGender.getText().toString();
         if (!currentGender.equals("No disponible") && !currentGender.isEmpty()) {
             int position = genderAdapter.getPosition(currentGender);
@@ -286,14 +269,12 @@ public class ProfileActivity extends AppCompatActivity {
                 spinnerUserGender.setSelection(position);
             }
         }
-        
-        // Set current birthdate
+
         String currentBirthdate = tvUserBirthdate.getText().toString();
         if (!currentBirthdate.equals("No disponible") && !currentBirthdate.isEmpty()) {
             etUserBirthdate.setText(currentBirthdate);
         }
-        
-        // Show save/cancel buttons, hide edit button
+
         if (btnEditProfile != null) {
             btnEditProfile.setVisibility(View.GONE);
         }
@@ -304,8 +285,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void exitEditMode() {
         isEditMode = false;
-        
-        // Show TextViews and hide EditTexts
+
         if (tvUserName != null) tvUserName.setVisibility(View.VISIBLE);
         if (tvUserEmail != null) tvUserEmail.setVisibility(View.VISIBLE);
         if (tvUserPhone != null) tvUserPhone.setVisibility(View.VISIBLE);
@@ -321,23 +301,20 @@ public class ProfileActivity extends AppCompatActivity {
         if (etUserAddress != null) etUserAddress.setVisibility(View.GONE);
         if (spinnerUserGender != null) spinnerUserGender.setVisibility(View.GONE);
         if (etUserBirthdate != null) etUserBirthdate.setVisibility(View.GONE);
-        
-        // Show edit button, hide save/cancel buttons
+
         if (btnEditProfile != null) {
             btnEditProfile.setVisibility(View.VISIBLE);
         }
         if (llEditButtons != null) {
             llEditButtons.setVisibility(View.GONE);
         }
-        
-        // Ensure save button is enabled for next time
+
         if (btnSaveProfile != null) {
             btnSaveProfile.setEnabled(true);
         }
     }
 
     private void saveProfileChanges() {
-        // Prevent multiple simultaneous save operations
         if (isSaving) {
             return;
         }
@@ -358,7 +335,6 @@ public class ProfileActivity extends AppCompatActivity {
         String gender = spinnerUserGender.getSelectedItem().toString();
         String birthdate = etUserBirthdate.getText().toString().trim();
 
-        // Basic validation
         if (name.isEmpty()) {
             Toast.makeText(this, "El nombre es requerido", Toast.LENGTH_SHORT).show();
             isSaving = false;
@@ -395,17 +371,14 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // CRITICAL: Ensure buttons container stays visible during save
         if (llEditButtons == null) {
             Toast.makeText(this, "Error: botones no inicializados", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        // Force visibility of the container and buttons
+
         llEditButtons.setVisibility(View.VISIBLE);
         llEditButtons.setAlpha(1.0f);
-        
-        // Disable button during save but keep it visible and ensure it's in the layout
+
         if (btnSaveProfile == null) {
             Toast.makeText(this, "Error: botón guardar no inicializado", Toast.LENGTH_SHORT).show();
             return;
@@ -415,14 +388,12 @@ public class ProfileActivity extends AppCompatActivity {
         btnSaveProfile.setAlpha(1.0f);
         btnSaveProfile.setEnabled(false);
         btnSaveProfile.setText("Guardando...");
-        
-        // Disable cancel button during save but keep it visible
+
         if (btnCancelEdit != null) {
             btnCancelEdit.setEnabled(false);
             btnCancelEdit.setVisibility(View.VISIBLE);
         }
 
-        // Update Firestore
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("phone", phone);
@@ -434,8 +405,6 @@ public class ProfileActivity extends AppCompatActivity {
         db.collection("users").document(currentUser.getUid())
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
-                    // Firebase callbacks run on main thread, so we can update UI directly
-                    // Update TextViews with new values
                     if (tvUserName != null) tvUserName.setText(name);
                     if (tvUserEmail != null) tvUserEmail.setText(email);
                     if (tvUserPhone != null) tvUserPhone.setText(phone);
@@ -444,23 +413,17 @@ public class ProfileActivity extends AppCompatActivity {
                     if (tvUserGender != null) tvUserGender.setText(gender);
                     if (tvUserBirthdate != null) tvUserBirthdate.setText(birthdate);
 
-                    // Show success message first
                     Toast.makeText(this, getString(R.string.profile_updated), Toast.LENGTH_SHORT).show();
-                    
-                    // Reset saving flag
+
                     isSaving = false;
-                    
-                    // Small delay to show the success message, then exit edit mode
+
                     new android.os.Handler().postDelayed(() -> {
-                        // Exit edit mode (this will show edit button and hide save/cancel buttons)
                         exitEditMode();
                     }, 500);
                 })
                 .addOnFailureListener(e -> {
-                    // Reset saving flag
                     isSaving = false;
-                    
-                    // Re-enable buttons on failure
+
                     if (btnSaveProfile != null) {
                         btnSaveProfile.setEnabled(true);
                         btnSaveProfile.setText(getString(R.string.save_profile));
@@ -470,7 +433,7 @@ public class ProfileActivity extends AppCompatActivity {
                         btnCancelEdit.setEnabled(true);
                         btnCancelEdit.setVisibility(View.VISIBLE);
                     }
-                    // Ensure container is still visible
+
                     if (llEditButtons != null) {
                         llEditButtons.setVisibility(View.VISIBLE);
                     }
@@ -481,7 +444,6 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Check if user is still logged in
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             redirectToLogin();
@@ -495,7 +457,6 @@ public class ProfileActivity extends AppCompatActivity {
         LinearLayout tabCuadrado = findViewById(R.id.tab_cuadrado);
         LinearLayout tabMenu = findViewById(R.id.tab_menu);
 
-        // Constantes para los índices de tabs
         final int TAB_HOME = 0;
         final int TAB_DESCUENTOS = 1;
         final int TAB_TIENDA = 2;
@@ -523,7 +484,6 @@ public class ProfileActivity extends AppCompatActivity {
 
             } else if (id == R.id.tab_menu) {
                 tabIndex = TAB_MENU;
-                // Open drawer when menu button is clicked
                 DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
                 NavigationView navView = findViewById(R.id.nav_view);
                 if (drawerLayout != null && navView != null) {
@@ -588,11 +548,8 @@ public class ProfileActivity extends AppCompatActivity {
     protected void setupTopNavigation() {
         android.widget.ImageView ivProfile = findViewById(R.id.iv_profile);
         if (ivProfile != null) {
-            // Si ya estamos en ProfileActivity, no hacer nada al hacer clic
             ivProfile.setOnClickListener(v -> {
-                // Ya estamos en el perfil, no necesitamos navegar
             });
-            // Make it clickable
             ivProfile.setClickable(true);
             ivProfile.setFocusable(true);
         }
@@ -604,23 +561,18 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
-                // Handle navigation view item clicks here
                 int itemId = item.getItemId();
                 
                 if (itemId == R.id.nav_pedidos_curso) {
-                    // Navigate to PedidosEnCursoActivity
                     Intent intent = new Intent(this, PedidosEnCursoActivity.class);
                     startActivity(intent);
                 } else if (itemId == R.id.nav_configuracion) {
-                    // Navigate to ConfiguracionActivity (placeholder for now)
                     Toast.makeText(this, "Configuración - Próximamente", Toast.LENGTH_SHORT).show();
                 } else if (itemId == R.id.nav_carga_documentos) {
-                    // Navigate to SubirRecetaActivity
                     Intent intent = new Intent(this, SubirRecetaActivity.class);
                     startActivity(intent);
                 }
-                
-                // Close drawer after selection
+
                 if (drawerLayout != null) {
                     drawerLayout.closeDrawer(navigationView);
                 }

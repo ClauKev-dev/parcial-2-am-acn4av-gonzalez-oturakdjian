@@ -44,7 +44,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -76,14 +75,12 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btn_register);
         btnLoginBottom = findViewById(R.id.btn_login_bottom);
         scrollView = findViewById(R.id.scroll_view);
-        
-        // Setup gender spinner
+
         ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(
             this, R.array.gender_options, android.R.layout.simple_spinner_item);
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerGender.setAdapter(genderAdapter);
-        
-        // Setup date picker for birthdate
+
         etBirthdate.setOnClickListener(v -> showDatePicker());
     }
     
@@ -103,20 +100,17 @@ public class RegisterActivity extends AppCompatActivity {
             },
             year, month, day
         );
-        // Set max date to today
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
     private void setupListeners() {
-        // Register button click
         btnRegister.setOnClickListener(v -> {
             if (validateForm()) {
                 performRegister();
             }
         });
 
-        // Login button click (bottom)
         if (btnLoginBottom != null) {
             btnLoginBottom.setOnClickListener(v -> {
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -125,7 +119,6 @@ public class RegisterActivity extends AppCompatActivity {
             });
         }
 
-        // Focus change listeners for dynamic background change
         setupFocusListeners();
     }
 
@@ -148,22 +141,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setupTextWatchers() {
-        // Name text watcher
         etName.addTextChangedListener(createTextWatcher(tvNameError));
-
-        // DNI text watcher
         etDni.addTextChangedListener(createTextWatcher(tvDniError));
-
-        // Address text watcher
         etAddress.addTextChangedListener(createTextWatcher(tvAddressError));
-
-        // Email text watcher
         etEmail.addTextChangedListener(createTextWatcher(tvEmailError));
-
-        // Phone text watcher
         etPhone.addTextChangedListener(createTextWatcher(tvPhoneError));
-
-        // Password text watcher
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -173,7 +155,6 @@ public class RegisterActivity extends AppCompatActivity {
                 if (tvPasswordError.getVisibility() == View.VISIBLE) {
                     tvPasswordError.setVisibility(View.GONE);
                 }
-                // Also check confirm password match dynamically
                 checkPasswordMatch();
             }
 
@@ -181,7 +162,6 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // Confirm password text watcher
         etConfirmPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -191,7 +171,6 @@ public class RegisterActivity extends AppCompatActivity {
                 if (tvConfirmPasswordError.getVisibility() == View.VISIBLE) {
                     tvConfirmPasswordError.setVisibility(View.GONE);
                 }
-                // Check password match dynamically
                 checkPasswordMatch();
             }
 
@@ -241,17 +220,14 @@ public class RegisterActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
-        // Clear previous errors
         hideAllErrors();
 
-        // Validate name
         if (name.isEmpty()) {
             showError(tvNameError, getString(R.string.error_name_required));
             scrollToView(etName);
             isValid = false;
         }
 
-        // Validate DNI
         if (dni.isEmpty()) {
             showError(tvDniError, getString(R.string.error_dni_required));
             if (isValid) scrollToView(etDni);
@@ -262,14 +238,12 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        // Validate address
         if (address.isEmpty()) {
             showError(tvAddressError, getString(R.string.error_address_required));
             if (isValid) scrollToView(etAddress);
             isValid = false;
         }
 
-        // Validate email
         if (email.isEmpty()) {
             showError(tvEmailError, getString(R.string.error_email_required));
             if (isValid) scrollToView(etEmail);
@@ -280,7 +254,6 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        // Validate phone
         if (phone.isEmpty()) {
             showError(tvPhoneError, getString(R.string.error_phone_required));
             if (isValid) scrollToView(etPhone);
@@ -291,7 +264,6 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        // Validate password
         if (password.isEmpty()) {
             showError(tvPasswordError, getString(R.string.error_password_required));
             if (isValid) scrollToView(etPassword);
@@ -302,7 +274,6 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        // Validate confirm password
         if (confirmPassword.isEmpty()) {
             showError(tvConfirmPasswordError, getString(R.string.error_password_required));
             if (isValid) scrollToView(etConfirmPassword);
@@ -313,7 +284,6 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        // Validate gender
         String gender = spinnerGender.getSelectedItem().toString();
         if (gender.isEmpty() || gender.equals("Seleccionar")) {
             showError(tvGenderError, "Por favor selecciona un género");
@@ -321,7 +291,6 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        // Validate birthdate
         String birthdate = etBirthdate.getText().toString().trim();
         if (birthdate.isEmpty()) {
             showError(tvBirthdateError, "La fecha de nacimiento es requerida");
@@ -382,28 +351,26 @@ public class RegisterActivity extends AppCompatActivity {
         String gender = spinnerGender.getSelectedItem().toString();
         String birthdate = etBirthdate.getText().toString().trim();
 
-        // Disable button during registration
         btnRegister.setEnabled(false);
         btnRegister.setText("Registrando...");
 
-        // Create user with Firebase Authentication
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Registration successful
+
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Save additional user data to Firestore
+
                             saveUserDataToFirestore(user.getUid(), name, dni, address, email, phone, gender, birthdate);
-                            // Crear carrito vacío para el nuevo usuario
+
                             CarritoManager.crearCarritoVacio(user.getUid());
                         } else {
-                            // User created but user object is null - redirect anyway
+
                             android.util.Log.w("RegisterActivity", "User created but user object is null");
                             redirectToLogin(email);
                         }
                     } else {
-                        // Registration failed - re-enable button
+
                         btnRegister.setEnabled(true);
                         btnRegister.setText(getString(R.string.register_button));
 
@@ -428,7 +395,7 @@ public class RegisterActivity extends AppCompatActivity {
                             } else {
                                 Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                             }
-                            // Log the exception for debugging
+
                             android.util.Log.e("RegisterActivity", "Registration failed", exception);
                         } else {
                             Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_LONG).show();
@@ -448,43 +415,32 @@ public class RegisterActivity extends AppCompatActivity {
         userData.put("birthdate", birthdate);
         userData.put("createdAt", com.google.firebase.Timestamp.now());
 
-        // Set a timeout to ensure we redirect even if Firestore doesn't respond
         android.os.Handler timeoutHandler = new android.os.Handler();
         Runnable timeoutRunnable = () -> {
-            // If we reach here, Firestore took too long, redirect anyway
             redirectToLogin(email);
         };
-        timeoutHandler.postDelayed(timeoutRunnable, 5000); // 5 second timeout
+        timeoutHandler.postDelayed(timeoutRunnable, 5000);
 
-        // Save user data to Firestore
         db.collection("users").document(userId)
                 .set(userData)
                 .addOnSuccessListener(aVoid -> {
-                    // Cancel timeout since we got a response
                     timeoutHandler.removeCallbacks(timeoutRunnable);
-                    
-                    // Show success message
+
                     tvSuccessMessage.setText(getString(R.string.success_register));
                     tvSuccessMessage.setVisibility(View.VISIBLE);
 
-                    // Scroll to success message
                     scrollView.post(() -> {
                         int scrollY = tvSuccessMessage.getTop();
                         scrollView.smoothScrollTo(0, scrollY);
                     });
 
-                    // Navigate to LoginActivity after successful registration
                     redirectToLogin(email);
                 })
                 .addOnFailureListener(e -> {
-                    // Cancel timeout since we got a response
                     timeoutHandler.removeCallbacks(timeoutRunnable);
-                    
-                    // Even if Firestore save fails, user is created in Auth
-                    // Log the error for debugging
+
                     android.util.Log.e("RegisterActivity", "Error saving to Firestore: " + e.getMessage(), e);
-                    
-                    // Show success message (user is created in Auth)
+
                     tvSuccessMessage.setText(getString(R.string.success_register));
                     tvSuccessMessage.setVisibility(View.VISIBLE);
 
@@ -493,13 +449,11 @@ public class RegisterActivity extends AppCompatActivity {
                         scrollView.smoothScrollTo(0, scrollY);
                     });
 
-                    // Redirect to login even if Firestore failed
                     redirectToLogin(email);
                 });
     }
 
     private void redirectToLogin(String email) {
-        // Reset button state before redirecting
         btnRegister.setEnabled(true);
         btnRegister.setText(getString(R.string.register_button));
         
@@ -509,7 +463,7 @@ public class RegisterActivity extends AppCompatActivity {
             intent.putExtra("email", email);
             startActivity(intent);
             finish();
-        }, 1500); // Reduced delay to 1.5 seconds
+        }, 1500);
     }
 }
 

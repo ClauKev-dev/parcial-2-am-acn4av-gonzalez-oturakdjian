@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity {
     private RecyclerView recyclerProducts;
     private ProductAdapter productAdapter;
     private List<Product> productList;
-    private List<Product> allProductsList; // Store all products for search filtering
+    private List<Product> allProductsList;
     private TextView tvNoResults;
     private ExecutorService executorService;
     private Handler mainHandler;
@@ -74,52 +74,41 @@ public class MainActivity extends BaseActivity {
         tvCartCount = findViewById(R.id.tv_cart_count);
         setupCarousel();
 
-        // Initialize RecyclerView
         recyclerProducts = findViewById(R.id.recyclerProducts);
         recyclerProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        
-        // Initialize no results message
+
         tvNoResults = findViewById(R.id.tv_no_results);
 
-        // Initialize product lists
         productList = new ArrayList<>();
         allProductsList = new ArrayList<>();
 
-        // Initialize adapter
         productAdapter = new ProductAdapter(this, productList, product -> {
-            // Verificar que el producto no sea nulo
+
             if (product == null) {
                 Toast.makeText(MainActivity.this, "Error: Producto no válido", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
-            // Verificar autenticación
+
             com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 Toast.makeText(MainActivity.this, "Debes iniciar sesión para agregar productos", Toast.LENGTH_LONG).show();
                 return;
             }
-            
-            // Agregar producto al carrito
+
             android.util.Log.d("MainActivity", "Intentando agregar producto: " + product.getName());
             CarritoManager.agregarProducto(product);
-            
-            // Actualizar contador inmediatamente
+
             actualizarCartCount();
-            
-            // Mostrar mensaje de confirmación
+
             Toast.makeText(MainActivity.this, product.getName() + " agregado al carrito", Toast.LENGTH_SHORT).show();
         });
         recyclerProducts.setAdapter(productAdapter);
 
-        // Initialize executor and handler for background tasks
         executorService = Executors.newSingleThreadExecutor();
         mainHandler = new Handler(getMainLooper());
 
-        // Cargar carrito del usuario al iniciar (esto se hace primero)
         cargarCarritoUsuario();
 
-        // Load products from JSON URL
         loadProductsFromJson();
     }
 
@@ -138,7 +127,6 @@ public class MainActivity extends BaseActivity {
     }
 
     private void loadProductsFromJson() {
-        // URL corregida sin /refs/heads/
         String jsonUrl = "https://raw.githubusercontent.com/ClauKev-dev/parcial-2-am-acn4av-gonzalez-oturakdjian/main/products.json";
         
         executorService.execute(() -> {
@@ -168,7 +156,6 @@ public class MainActivity extends BaseActivity {
                     String jsonString = stringBuilder.toString();
                     parseJsonAndUpdateUI(jsonString);
                 } else {
-                    // Si falla la URL, intentar cargar desde assets como fallback
                     mainHandler.post(() -> {
                         Toast.makeText(MainActivity.this, "Error al cargar desde URL (Código " + responseCode + "). Cargando desde assets...", Toast.LENGTH_SHORT).show();
                     });
@@ -176,7 +163,6 @@ public class MainActivity extends BaseActivity {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                // Si hay excepción, intentar cargar desde assets como fallback
                 mainHandler.post(() -> {
                     Toast.makeText(MainActivity.this, "Error al cargar desde URL. Cargando desde assets...", Toast.LENGTH_SHORT).show();
                 });
@@ -199,18 +185,16 @@ public class MainActivity extends BaseActivity {
     private void loadProductsFromAssets() {
         executorService.execute(() -> {
             try {
-                // Intentar leer desde assets
                 InputStream inputStream = getAssets().open("products.json");
                 int size = inputStream.available();
                 byte[] buffer = new byte[size];
                 inputStream.read(buffer);
                 inputStream.close();
-                
-                // Convertir a string
+
                 String jsonString = new String(buffer, "UTF-8");
                 parseJsonAndUpdateUI(jsonString);
             } catch (IOException e) {
-                // Si también falla assets, mostrar error
+
                 mainHandler.post(() -> {
                     Toast.makeText(MainActivity.this, "Error al cargar productos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
@@ -221,7 +205,6 @@ public class MainActivity extends BaseActivity {
     
     private void parseJsonAndUpdateUI(String jsonString) {
         try {
-            // Parse JSON
             JSONArray jsonArray = new JSONArray(jsonString);
             List<Product> newProductList = new ArrayList<>();
             
@@ -236,8 +219,7 @@ public class MainActivity extends BaseActivity {
                 
                 newProductList.add(product);
             }
-            
-            // Update UI on main thread
+
             mainHandler.post(() -> {
                 allProductsList.clear();
                 allProductsList.addAll(newProductList);
@@ -262,8 +244,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void setupTopNavigation() {
         super.setupTopNavigation();
-        
-        // Setup search functionality
+
         EditText etSearch = findViewById(R.id.et_search);
         if (etSearch != null) {
             etSearch.addTextChangedListener(new TextWatcher() {
@@ -293,21 +274,18 @@ public class MainActivity extends BaseActivity {
         boolean hasSearchQuery = searchQuery != null && !searchQuery.trim().isEmpty();
         
         if (!hasSearchQuery) {
-            // Show all products if search is empty
             productList.addAll(allProductsList);
             if (tvNoResults != null) {
                 tvNoResults.setVisibility(View.GONE);
             }
         } else {
-            // Filter products by name (case insensitive)
             String query = searchQuery.toLowerCase().trim();
             for (Product product : allProductsList) {
                 if (product.getName() != null && product.getName().toLowerCase().contains(query)) {
                     productList.add(product);
                 }
             }
-            
-            // Show "sin resultados" if no products match the search
+
             if (tvNoResults != null) {
                 if (productList.isEmpty()) {
                     tvNoResults.setVisibility(View.VISIBLE);

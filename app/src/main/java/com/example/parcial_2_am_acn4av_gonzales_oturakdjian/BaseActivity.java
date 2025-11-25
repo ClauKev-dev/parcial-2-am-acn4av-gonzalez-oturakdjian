@@ -28,8 +28,7 @@ public class BaseActivity extends AppCompatActivity {
 
         container = findViewById(R.id.container);
         setContent(R.layout.activity_main);
-        
-        // Setup drawer navigation
+
         setupDrawer();
     }
 
@@ -89,7 +88,6 @@ public class BaseActivity extends AppCompatActivity {
         LinearLayout tabCuadrado = findViewById(R.id.tab_cuadrado);
         LinearLayout tabMenu = findViewById(R.id.tab_menu);
 
-        // Ensure drawer is initialized
         if (drawerLayout == null) {
             drawerLayout = findViewById(R.id.drawer_layout);
         }
@@ -97,7 +95,6 @@ public class BaseActivity extends AppCompatActivity {
             navigationView = findViewById(R.id.nav_view);
         }
 
-        // Constantes para los índices de tabs
         final int TAB_HOME = 0;
         final int TAB_DESCUENTOS = 1;
         final int TAB_TIENDA = 2;
@@ -132,7 +129,6 @@ public class BaseActivity extends AppCompatActivity {
 
             } else if (id == R.id.tab_menu) {
                 tabIndex = TAB_MENU;
-                // Open drawer when menu button is clicked
                 if (drawerLayout != null && navigationView != null) {
                     drawerLayout.openDrawer(navigationView);
                 }
@@ -162,19 +158,17 @@ public class BaseActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
             });
-            // Make it clickable
+
             ivProfile.setClickable(true);
             ivProfile.setFocusable(true);
         }
-        
-        // Setup search icon click to toggle search bar
+
         if (ivSearch != null && etSearch != null) {
             android.widget.LinearLayout llHeader = findViewById(R.id.ll_header);
             android.view.ViewGroup parent = (android.view.ViewGroup) etSearch.getParent();
             
             ivSearch.setOnClickListener(v -> {
                 if (etSearch.getVisibility() == View.VISIBLE) {
-                    // Hide search bar with slide-out animation (left to right)
                     int width = parent != null ? parent.getWidth() : 1000;
                     android.view.animation.TranslateAnimation slideOut = new android.view.animation.TranslateAnimation(
                             0, width, 0, 0);
@@ -198,16 +192,13 @@ public class BaseActivity extends AppCompatActivity {
                     });
                     etSearch.startAnimation(slideOut);
                     etSearch.clearFocus();
-                    // Clear search if this is MainActivity
                     if (this instanceof MainActivity) {
                         ((MainActivity) this).clearSearch();
                     }
                 } else {
-                    // Hide header first
                     if (llHeader != null) {
                         llHeader.setVisibility(View.GONE);
                     }
-                    // Show search bar with slide-in animation (right to left)
                     etSearch.setVisibility(View.VISIBLE);
                     int width = parent != null ? parent.getWidth() : 1000;
                     android.view.animation.TranslateAnimation slideIn = new android.view.animation.TranslateAnimation(
@@ -228,7 +219,6 @@ public class BaseActivity extends AppCompatActivity {
                     });
                     etSearch.startAnimation(slideIn);
                     etSearch.requestFocus();
-                    // Show keyboard
                     android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
                         imm.showSoftInput(etSearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
@@ -246,25 +236,18 @@ public class BaseActivity extends AppCompatActivity {
 
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(item -> {
-                // Handle navigation view item clicks here
                 int itemId = item.getItemId();
                 
                 if (itemId == R.id.nav_pedidos_curso) {
-                    // Navigate to PedidosEnCursoActivity
                     Intent intent = new Intent(this, PedidosEnCursoActivity.class);
                     startActivity(intent);
                 } else if (itemId == R.id.nav_configuracion) {
-                    // Navigate to ConfiguracionActivity (placeholder for now)
                     Toast.makeText(this, "Configuración - Próximamente", Toast.LENGTH_SHORT).show();
-                    // Intent intent = new Intent(this, ConfiguracionActivity.class);
-                    // startActivity(intent);
                 } else if (itemId == R.id.nav_carga_documentos) {
-                    // Navigate to SubirRecetaActivity
                     Intent intent = new Intent(this, SubirRecetaActivity.class);
                     startActivity(intent);
                 }
-                
-                // Close drawer after selection
+
                 if (drawerLayout != null) {
                     drawerLayout.closeDrawer(navigationView);
                 }

@@ -38,8 +38,7 @@ public class CarouselAdapter extends PagerAdapter {
         View itemView = layoutInflater.inflate(R.layout.carousel_item, container, false);
 
         ImageView imageView = itemView.findViewById(R.id.iv_carousel_image);
-        
-        // Load image from URL using Glide
+
         String imageUrl = imageUrls.get(position);
         Glide.with(context)
                 .load(imageUrl)
