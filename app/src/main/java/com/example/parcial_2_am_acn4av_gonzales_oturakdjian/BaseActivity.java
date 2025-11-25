@@ -184,10 +184,9 @@ public class BaseActivity extends AppCompatActivity {
                     // Intent intent = new Intent(this, ConfiguracionActivity.class);
                     // startActivity(intent);
                 } else if (itemId == R.id.nav_carga_documentos) {
-                    // Navigate to CargaDocumentosActivity (placeholder for now)
-                    Toast.makeText(this, "Carga de documentos - Próximamente", Toast.LENGTH_SHORT).show();
-                    // Intent intent = new Intent(this, CargaDocumentosActivity.class);
-                    // startActivity(intent);
+                    // Navigate to SubirRecetaActivity
+                    Intent intent = new Intent(this, SubirRecetaActivity.class);
+                    startActivity(intent);
                 }
                 
                 // Close drawer after selection
