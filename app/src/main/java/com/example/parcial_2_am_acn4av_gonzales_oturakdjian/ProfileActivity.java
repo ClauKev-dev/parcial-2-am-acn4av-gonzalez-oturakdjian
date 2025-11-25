@@ -1,15 +1,18 @@
 package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,13 +26,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView tvUserName, tvUserEmail, tvUserPhone, tvUserDni, tvUserAddress;
-    private EditText etUserName, etUserEmail, etUserPhone, etUserDni, etUserAddress;
+    private TextView tvUserName, tvUserEmail, tvUserPhone, tvUserDni, tvUserAddress, tvUserGender, tvUserBirthdate;
+    private EditText etUserName, etUserEmail, etUserPhone, etUserDni, etUserAddress, etUserBirthdate;
+    private Spinner spinnerUserGender;
     private Button btnLogout, btnEditProfile, btnSaveProfile, btnCancelEdit;
     private LinearLayout llEditButtons;
     private ScrollView scrollView;
@@ -37,6 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private boolean isEditMode = false;
     private boolean isSaving = false;
+    private ArrayAdapter<CharSequence> genderAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,22 +71,55 @@ public class ProfileActivity extends AppCompatActivity {
             tvUserPhone = findViewById(R.id.tv_user_phone);
             tvUserDni = findViewById(R.id.tv_user_dni);
             tvUserAddress = findViewById(R.id.tv_user_address);
+            tvUserGender = findViewById(R.id.tv_user_gender);
+            tvUserBirthdate = findViewById(R.id.tv_user_birthdate);
             etUserName = findViewById(R.id.et_user_name);
             etUserEmail = findViewById(R.id.et_user_email);
             etUserPhone = findViewById(R.id.et_user_phone);
             etUserDni = findViewById(R.id.et_user_dni);
             etUserAddress = findViewById(R.id.et_user_address);
+            etUserBirthdate = findViewById(R.id.et_user_birthdate);
+            spinnerUserGender = findViewById(R.id.spinner_user_gender);
             btnLogout = findViewById(R.id.btn_logout);
             btnEditProfile = findViewById(R.id.btn_edit_profile);
             btnSaveProfile = findViewById(R.id.btn_save_profile);
             btnCancelEdit = findViewById(R.id.btn_cancel_edit);
             llEditButtons = findViewById(R.id.ll_edit_buttons);
             scrollView = findViewById(R.id.scroll_view);
+            
+            // Setup gender spinner
+            genderAdapter = ArrayAdapter.createFromResource(
+                this, R.array.gender_options, android.R.layout.simple_spinner_item);
+            genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerUserGender.setAdapter(genderAdapter);
+            
+            // Setup date picker for birthdate
+            etUserBirthdate.setOnClickListener(v -> showDatePicker());
         } catch (Exception e) {
             android.util.Log.e("ProfileActivity", "Error initializing views", e);
             Toast.makeText(this, "Error al cargar la pantalla de perfil", Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+    
+    private void showDatePicker() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+            this,
+            (view, selectedYear, selectedMonth, selectedDay) -> {
+                String dateString = String.format(Locale.getDefault(), 
+                    "%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                etUserBirthdate.setText(dateString);
+            },
+            year, month, day
+        );
+        // Set max date to today
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        datePickerDialog.show();
     }
 
     private void setupListeners() {
@@ -134,12 +174,29 @@ public class ProfileActivity extends AppCompatActivity {
                         } else {
                             tvUserAddress.setText("No disponible");
                         }
+                        
+                        String gender = documentSnapshot.getString("gender");
+                        String birthdate = documentSnapshot.getString("birthdate");
+                        
+                        if (gender != null && !gender.isEmpty()) {
+                            tvUserGender.setText(gender);
+                        } else {
+                            tvUserGender.setText("No disponible");
+                        }
+                        
+                        if (birthdate != null && !birthdate.isEmpty()) {
+                            tvUserBirthdate.setText(birthdate);
+                        } else {
+                            tvUserBirthdate.setText("No disponible");
+                        }
                     } else {
                         // Document doesn't exist, use default values
                         tvUserName.setText("Usuario");
                         tvUserPhone.setText("No disponible");
                         tvUserDni.setText("No disponible");
                         tvUserAddress.setText("No disponible");
+                        tvUserGender.setText("No disponible");
+                        tvUserBirthdate.setText("No disponible");
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -149,6 +206,8 @@ public class ProfileActivity extends AppCompatActivity {
                     tvUserPhone.setText("No disponible");
                     tvUserDni.setText("No disponible");
                     tvUserAddress.setText("No disponible");
+                    tvUserGender.setText("No disponible");
+                    tvUserBirthdate.setText("No disponible");
                     Toast.makeText(this, "Error al cargar datos del usuario", Toast.LENGTH_SHORT).show();
                 });
     }
@@ -201,12 +260,16 @@ public class ProfileActivity extends AppCompatActivity {
         tvUserPhone.setVisibility(View.GONE);
         tvUserDni.setVisibility(View.GONE);
         tvUserAddress.setVisibility(View.GONE);
+        tvUserGender.setVisibility(View.GONE);
+        tvUserBirthdate.setVisibility(View.GONE);
         
         etUserName.setVisibility(View.VISIBLE);
         etUserEmail.setVisibility(View.VISIBLE);
         etUserPhone.setVisibility(View.VISIBLE);
         etUserDni.setVisibility(View.VISIBLE);
         etUserAddress.setVisibility(View.VISIBLE);
+        spinnerUserGender.setVisibility(View.VISIBLE);
+        etUserBirthdate.setVisibility(View.VISIBLE);
         
         // Populate EditTexts with current values
         etUserName.setText(tvUserName.getText().toString());
@@ -214,6 +277,21 @@ public class ProfileActivity extends AppCompatActivity {
         etUserPhone.setText(tvUserPhone.getText().toString());
         etUserDni.setText(tvUserDni.getText().toString());
         etUserAddress.setText(tvUserAddress.getText().toString());
+        
+        // Set current gender in spinner
+        String currentGender = tvUserGender.getText().toString();
+        if (!currentGender.equals("No disponible") && !currentGender.isEmpty()) {
+            int position = genderAdapter.getPosition(currentGender);
+            if (position >= 0) {
+                spinnerUserGender.setSelection(position);
+            }
+        }
+        
+        // Set current birthdate
+        String currentBirthdate = tvUserBirthdate.getText().toString();
+        if (!currentBirthdate.equals("No disponible") && !currentBirthdate.isEmpty()) {
+            etUserBirthdate.setText(currentBirthdate);
+        }
         
         // Show save/cancel buttons, hide edit button
         if (btnEditProfile != null) {
@@ -233,12 +311,16 @@ public class ProfileActivity extends AppCompatActivity {
         if (tvUserPhone != null) tvUserPhone.setVisibility(View.VISIBLE);
         if (tvUserDni != null) tvUserDni.setVisibility(View.VISIBLE);
         if (tvUserAddress != null) tvUserAddress.setVisibility(View.VISIBLE);
+        if (tvUserGender != null) tvUserGender.setVisibility(View.VISIBLE);
+        if (tvUserBirthdate != null) tvUserBirthdate.setVisibility(View.VISIBLE);
         
         if (etUserName != null) etUserName.setVisibility(View.GONE);
         if (etUserEmail != null) etUserEmail.setVisibility(View.GONE);
         if (etUserPhone != null) etUserPhone.setVisibility(View.GONE);
         if (etUserDni != null) etUserDni.setVisibility(View.GONE);
         if (etUserAddress != null) etUserAddress.setVisibility(View.GONE);
+        if (spinnerUserGender != null) spinnerUserGender.setVisibility(View.GONE);
+        if (etUserBirthdate != null) etUserBirthdate.setVisibility(View.GONE);
         
         // Show edit button, hide save/cancel buttons
         if (btnEditProfile != null) {
@@ -273,26 +355,43 @@ public class ProfileActivity extends AppCompatActivity {
         String phone = etUserPhone.getText().toString().trim();
         String dni = etUserDni.getText().toString().trim();
         String address = etUserAddress.getText().toString().trim();
+        String gender = spinnerUserGender.getSelectedItem().toString();
+        String birthdate = etUserBirthdate.getText().toString().trim();
 
         // Basic validation
         if (name.isEmpty()) {
             Toast.makeText(this, "El nombre es requerido", Toast.LENGTH_SHORT).show();
+            isSaving = false;
             return;
         }
         if (email.isEmpty()) {
             Toast.makeText(this, "El correo electrónico es requerido", Toast.LENGTH_SHORT).show();
+            isSaving = false;
             return;
         }
         if (phone.isEmpty()) {
             Toast.makeText(this, "El teléfono es requerido", Toast.LENGTH_SHORT).show();
+            isSaving = false;
             return;
         }
         if (dni.isEmpty()) {
             Toast.makeText(this, "El DNI es requerido", Toast.LENGTH_SHORT).show();
+            isSaving = false;
             return;
         }
         if (address.isEmpty()) {
             Toast.makeText(this, "La dirección es requerida", Toast.LENGTH_SHORT).show();
+            isSaving = false;
+            return;
+        }
+        if (gender.isEmpty() || gender.equals("Seleccionar")) {
+            Toast.makeText(this, "Por favor selecciona un género", Toast.LENGTH_SHORT).show();
+            isSaving = false;
+            return;
+        }
+        if (birthdate.isEmpty()) {
+            Toast.makeText(this, "La fecha de nacimiento es requerida", Toast.LENGTH_SHORT).show();
+            isSaving = false;
             return;
         }
 
@@ -329,6 +428,8 @@ public class ProfileActivity extends AppCompatActivity {
         updates.put("phone", phone);
         updates.put("dni", dni);
         updates.put("address", address);
+        updates.put("gender", gender);
+        updates.put("birthdate", birthdate);
 
         db.collection("users").document(currentUser.getUid())
                 .update(updates)
@@ -340,6 +441,8 @@ public class ProfileActivity extends AppCompatActivity {
                     if (tvUserPhone != null) tvUserPhone.setText(phone);
                     if (tvUserDni != null) tvUserDni.setText(dni);
                     if (tvUserAddress != null) tvUserAddress.setText(address);
+                    if (tvUserGender != null) tvUserGender.setText(gender);
+                    if (tvUserBirthdate != null) tvUserBirthdate.setText(birthdate);
 
                     // Show success message first
                     Toast.makeText(this, getString(R.string.profile_updated), Toast.LENGTH_SHORT).show();

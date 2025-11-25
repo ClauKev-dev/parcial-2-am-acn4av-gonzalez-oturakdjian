@@ -109,11 +109,39 @@ public class CarritoActivity extends BaseActivity {
     }
 
     public void actualizarTotal() {
-        double total = 0;
-        for (Product p : CarritoManager.getCarrito()) {
-            total += p.getPrice() * p.getQuantity();
+        double total = CarritoManager.getCarrito().stream().mapToDouble(p -> p.getPrice() * p.getQuantity()).sum();
+
+        // Check for senior discount
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            db.collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String gender = documentSnapshot.getString("gender");
+                        String birthdate = documentSnapshot.getString("birthdate");
+                        
+                        boolean qualifies = DiscountHelper.qualifiesForDiscount(birthdate, gender);
+                        double finalTotal = DiscountHelper.applyDiscount(total, qualifies);
+                        double discount = DiscountHelper.getDiscountAmount(total, qualifies);
+                        
+                        if (qualifies) {
+                            tvTotal.setText(String.format(Locale.getDefault(), 
+                                "Total: $%.2f (Descuento 15%%: -$%.2f)", finalTotal, discount));
+                        } else {
+                            tvTotal.setText(String.format(Locale.getDefault(), "Total: $%.2f", finalTotal));
+                        }
+                    } else {
+                        tvTotal.setText(String.format(Locale.getDefault(), "Total: $%.2f", total));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // On error, just show regular total
+                    tvTotal.setText(String.format(Locale.getDefault(), "Total: $%.2f", total));
+                });
+        } else {
+            tvTotal.setText(String.format(Locale.getDefault(), "Total: $%.2f", total));
         }
-        tvTotal.setText(String.format(Locale.getDefault(), "Total: $%.2f", total));
     }
 
     public void notificarCambioCarrito() {
@@ -141,12 +169,41 @@ public class CarritoActivity extends BaseActivity {
         TextView tvTotalPago = dialogView.findViewById(R.id.tv_total_pago);
 
         // Calcular total
-        double totalCalculado = 0;
-        for (Product p : carrito) {
-            totalCalculado += p.getPrice() * p.getQuantity();
+        double totalCalculado = carrito.stream().mapToDouble(p -> p.getPrice() * p.getQuantity()).sum();
+
+        // Check for discount and update total display
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            db.collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String gender = documentSnapshot.getString("gender");
+                        String birthdate = documentSnapshot.getString("birthdate");
+                        
+                        boolean qualifies = DiscountHelper.qualifiesForDiscount(birthdate, gender);
+                        double finalTotal = DiscountHelper.applyDiscount(totalCalculado, qualifies);
+                        double discount = DiscountHelper.getDiscountAmount(totalCalculado, qualifies);
+                        
+                        if (qualifies) {
+                            tvTotalPago.setText(String.format(Locale.getDefault(), 
+                                "Total: $%.2f\nDescuento 15%%: -$%.2f\nTotal Final: $%.2f", 
+                                totalCalculado, discount, finalTotal));
+                        } else {
+                            tvTotalPago.setText(String.format(Locale.getDefault(), "Total: $%.2f", finalTotal));
+                        }
+                    } else {
+                        tvTotalPago.setText(String.format(Locale.getDefault(), "Total: $%.2f", totalCalculado));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    tvTotalPago.setText(String.format(Locale.getDefault(), "Total: $%.2f", totalCalculado));
+                });
+        } else {
+            tvTotalPago.setText(String.format(Locale.getDefault(), "Total: $%.2f", totalCalculado));
         }
-        final double total = totalCalculado; // Hacer final para usar en lambda
-        tvTotalPago.setText(String.format(Locale.getDefault(), "Total: $%.2f", total));
+        
+        final double total = totalCalculado; // Keep original for validation, will be recalculated with discount in procesarPago
 
         // Formatear número de tarjeta (agregar espacios cada 4 dígitos)
         etCardNumber.addTextChangedListener(new TextWatcher() {
@@ -247,7 +304,7 @@ public class CarritoActivity extends BaseActivity {
 
             // Obtener últimos 4 dígitos
             String lastFour = cardNumber.substring(cardNumber.length() - 4);
-            procesarPago(lastFour, cardHolder, total);
+            procesarPago(lastFour, cardHolder, totalCalculado);
         });
         builder.setNegativeButton("Cancelar", null);
 
@@ -255,7 +312,7 @@ public class CarritoActivity extends BaseActivity {
         dialog.show();
     }
 
-    private void procesarPago(String cardLastFour, String cardHolder, double total) {
+    private void procesarPago(String cardLastFour, String cardHolder, double totalCalculado) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "Debes iniciar sesión para realizar el pago", Toast.LENGTH_SHORT).show();
@@ -276,8 +333,34 @@ public class CarritoActivity extends BaseActivity {
             productosPedido.add(copia);
         }
 
-        // Crear pedido
-        Order order = new Order(user.getUid(), productosPedido, total, cardLastFour, cardHolder);
+        // Get user data and apply discount
+        db.collection("users").document(user.getUid())
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                double finalTotal = totalCalculado;
+                if (documentSnapshot.exists()) {
+                    String gender = documentSnapshot.getString("gender");
+                    String birthdate = documentSnapshot.getString("birthdate");
+                    boolean qualifies = DiscountHelper.qualifiesForDiscount(birthdate, gender);
+                    finalTotal = DiscountHelper.applyDiscount(totalCalculado, qualifies);
+                }
+                
+                // Crear pedido con el total con descuento aplicado
+                Order order = new Order(user.getUid(), productosPedido, finalTotal, cardLastFour, cardHolder);
+                procesarPagoConTotal(order, productosPedido);
+            })
+            .addOnFailureListener(e -> {
+                // On error, proceed with original total
+                Order order = new Order(user.getUid(), productosPedido, totalCalculado, cardLastFour, cardHolder);
+                procesarPagoConTotal(order, productosPedido);
+            });
+    }
+    
+    private void procesarPagoConTotal(Order order, List<Product> productosPedido) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            return;
+        }
 
         // Guardar pedido en Firestore
         Map<String, Object> orderData = new HashMap<>();

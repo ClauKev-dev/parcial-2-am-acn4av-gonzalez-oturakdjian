@@ -55,4 +55,11 @@
     <string name="logout_confirmation">¿Estás seguro que deseas cerrar sesión?</string>
     <string name="logout_success">Sesión cerrada exitosamente</string>
     <string name="loading_user_data">Cargando datos del usuario...</string>
+    
+    <!-- Gender Options -->
+    <string-array name="gender_options">
+        <item>Seleccionar</item>
+        <item>Mujer</item>
+        <item>Hombre</item>
+    </string-array>
 </resources>

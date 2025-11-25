@@ -1,13 +1,16 @@
 package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,14 +20,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etName, etDni, etAddress, etEmail, etPhone, etPassword, etConfirmPassword;
-    private TextView tvNameError, tvDniError, tvAddressError, tvEmailError, tvPhoneError, tvPasswordError, tvConfirmPasswordError, tvSuccessMessage;
+    private EditText etName, etDni, etAddress, etEmail, etPhone, etPassword, etConfirmPassword, etBirthdate;
+    private TextView tvNameError, tvDniError, tvAddressError, tvEmailError, tvPhoneError, tvPasswordError, tvConfirmPasswordError, tvGenderError, tvBirthdateError, tvSuccessMessage;
+    private Spinner spinnerGender;
     private Button btnRegister, btnLoginBottom;
     private ScrollView scrollView;
     private FirebaseAuth mAuth;
@@ -55,6 +61,8 @@ public class RegisterActivity extends AppCompatActivity {
         etPhone = findViewById(R.id.et_phone);
         etPassword = findViewById(R.id.et_password);
         etConfirmPassword = findViewById(R.id.et_confirm_password);
+        etBirthdate = findViewById(R.id.et_birthdate);
+        spinnerGender = findViewById(R.id.spinner_gender);
         tvNameError = findViewById(R.id.tv_name_error);
         tvDniError = findViewById(R.id.tv_dni_error);
         tvAddressError = findViewById(R.id.tv_address_error);
@@ -62,10 +70,42 @@ public class RegisterActivity extends AppCompatActivity {
         tvPhoneError = findViewById(R.id.tv_phone_error);
         tvPasswordError = findViewById(R.id.tv_password_error);
         tvConfirmPasswordError = findViewById(R.id.tv_confirm_password_error);
+        tvGenderError = findViewById(R.id.tv_gender_error);
+        tvBirthdateError = findViewById(R.id.tv_birthdate_error);
         tvSuccessMessage = findViewById(R.id.tv_success_message);
         btnRegister = findViewById(R.id.btn_register);
         btnLoginBottom = findViewById(R.id.btn_login_bottom);
         scrollView = findViewById(R.id.scroll_view);
+        
+        // Setup gender spinner
+        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(
+            this, R.array.gender_options, android.R.layout.simple_spinner_item);
+        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGender.setAdapter(genderAdapter);
+        
+        // Setup date picker for birthdate
+        etBirthdate.setOnClickListener(v -> showDatePicker());
+    }
+    
+    private void showDatePicker() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+            this,
+            (view, selectedYear, selectedMonth, selectedDay) -> {
+                String dateString = String.format(Locale.getDefault(), 
+                    "%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                etBirthdate.setText(dateString);
+                tvBirthdateError.setVisibility(View.GONE);
+            },
+            year, month, day
+        );
+        // Set max date to today
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        datePickerDialog.show();
     }
 
     private void setupListeners() {
@@ -273,6 +313,22 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
+        // Validate gender
+        String gender = spinnerGender.getSelectedItem().toString();
+        if (gender.isEmpty() || gender.equals("Seleccionar")) {
+            showError(tvGenderError, "Por favor selecciona un género");
+            if (isValid) scrollToView(spinnerGender);
+            isValid = false;
+        }
+
+        // Validate birthdate
+        String birthdate = etBirthdate.getText().toString().trim();
+        if (birthdate.isEmpty()) {
+            showError(tvBirthdateError, "La fecha de nacimiento es requerida");
+            if (isValid) scrollToView(etBirthdate);
+            isValid = false;
+        }
+
         return isValid;
     }
 
@@ -304,6 +360,8 @@ public class RegisterActivity extends AppCompatActivity {
         tvPhoneError.setVisibility(View.GONE);
         tvPasswordError.setVisibility(View.GONE);
         tvConfirmPasswordError.setVisibility(View.GONE);
+        tvGenderError.setVisibility(View.GONE);
+        tvBirthdateError.setVisibility(View.GONE);
         tvSuccessMessage.setVisibility(View.GONE);
     }
 
@@ -321,6 +379,8 @@ public class RegisterActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
+        String gender = spinnerGender.getSelectedItem().toString();
+        String birthdate = etBirthdate.getText().toString().trim();
 
         // Disable button during registration
         btnRegister.setEnabled(false);
@@ -334,7 +394,7 @@ public class RegisterActivity extends AppCompatActivity {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             // Save additional user data to Firestore
-                            saveUserDataToFirestore(user.getUid(), name, dni, address, email, phone);
+                            saveUserDataToFirestore(user.getUid(), name, dni, address, email, phone, gender, birthdate);
                             // Crear carrito vacío para el nuevo usuario
                             CarritoManager.crearCarritoVacio(user.getUid());
                         } else {
@@ -377,13 +437,15 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserDataToFirestore(String userId, String name, String dni, String address, String email, String phone) {
+    private void saveUserDataToFirestore(String userId, String name, String dni, String address, String email, String phone, String gender, String birthdate) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", name);
         userData.put("dni", dni);
         userData.put("address", address);
         userData.put("email", email);
         userData.put("phone", phone);
+        userData.put("gender", gender);
+        userData.put("birthdate", birthdate);
         userData.put("createdAt", com.google.firebase.Timestamp.now());
 
         // Set a timeout to ensure we redirect even if Firestore doesn't respond
