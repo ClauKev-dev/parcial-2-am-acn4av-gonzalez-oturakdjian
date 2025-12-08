@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.parcial_2_am_acn4av_gonzales_oturakdjian'
+    namespace 'com.example.final_am_acn4av_gonzalez_oturakdjian'
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.parcial_1_am_acn4av_gonzales_oturakdjian"
+        applicationId "com.example.final_am_acn4av_gonzalez_oturakdjian"
         minSdk 29
         targetSdk 36
         versionCode 1

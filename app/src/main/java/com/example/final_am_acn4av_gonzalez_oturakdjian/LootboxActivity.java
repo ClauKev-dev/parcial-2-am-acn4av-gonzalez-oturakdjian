@@ -1,10 +1,9 @@
-package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
+package com.example.final_am_acn4av_gonzalez_oturakdjian;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -16,10 +15,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class LootboxActivity extends BaseActivity {
 

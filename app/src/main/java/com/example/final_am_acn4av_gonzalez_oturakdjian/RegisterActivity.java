@@ -1,4 +1,4 @@
-package com.example.parcial_2_am_acn4av_gonzales_oturakdjian;
+package com.example.final_am_acn4av_gonzalez_oturakdjian;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
