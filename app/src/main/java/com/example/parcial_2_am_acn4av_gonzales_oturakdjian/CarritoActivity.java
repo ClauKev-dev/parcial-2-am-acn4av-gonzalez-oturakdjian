@@ -748,6 +748,18 @@ public class CarritoActivity extends BaseActivity {
                     order.setId(documentReference.getId());
                     android.util.Log.d("CarritoActivity", "Pedido guardado exitosamente: " + documentReference.getId());
                     
+                    // Count keys in the order and update user's key count
+                    int keysInOrder = 0;
+                    for (Product product : productosPedido) {
+                        if ("Llave".equals(product.getName())) {
+                            keysInOrder += product.getQuantity();
+                        }
+                    }
+                    
+                    if (keysInOrder > 0) {
+                        updateUserKeyCount(userId, keysInOrder);
+                    }
+                    
                     runOnUiThread(() -> {
                         adapter = new CarritoAdapter(CarritoActivity.this, new ArrayList<>());
                         recyclerCarrito.setAdapter(adapter);
@@ -785,6 +797,43 @@ public class CarritoActivity extends BaseActivity {
                     
                     btnPagar.setEnabled(true);
                     btnPagar.setText("Pagar");
+                });
+    }
+
+    private void updateUserKeyCount(String userId, int keysToAdd) {
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    long currentKeys = 0;
+                    if (documentSnapshot.exists()) {
+                        Long keys = documentSnapshot.getLong("lootboxKeys");
+                        currentKeys = keys != null ? keys : 0;
+                    }
+                    
+                    long newKeyCount = currentKeys + keysToAdd;
+                    
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("lootboxKeys", newKeyCount);
+                    
+                    db.collection("users").document(userId)
+                            .update(updates)
+                            .addOnSuccessListener(aVoid -> {
+                                android.util.Log.d("CarritoActivity", "Key count updated: " + newKeyCount);
+                            })
+                            .addOnFailureListener(e -> {
+                                android.util.Log.e("CarritoActivity", "Error al actualizar cantidad de llaves: " + e.getMessage());
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("CarritoActivity", "Error al obtener cantidad de llaves: " + e.getMessage());
+                    // Try to set directly if document doesn't exist
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("lootboxKeys", keysToAdd);
+                    db.collection("users").document(userId)
+                            .set(updates)
+                            .addOnFailureListener(e2 -> {
+                                android.util.Log.e("CarritoActivity", "Error al crear cantidad de llaves: " + e2.getMessage());
+                            });
                 });
     }
 

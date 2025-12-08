@@ -126,7 +126,10 @@ public class BaseActivity extends AppCompatActivity {
                 }
             } else if (id == R.id.tab_cuadrado) {
                 tabIndex = TAB_CUADRADO;
-
+                if (!(this instanceof LootboxActivity)) {
+                    startActivity(new Intent(this, LootboxActivity.class));
+                    finish();
+                }
             } else if (id == R.id.tab_menu) {
                 tabIndex = TAB_MENU;
                 if (drawerLayout != null && navigationView != null) {
